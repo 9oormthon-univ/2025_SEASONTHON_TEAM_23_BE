@@ -3,7 +3,6 @@ package com.petfarewell.auth.controller;
 import java.util.*;
 
 import com.petfarewell.auth.dto.ErrorResponse;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
