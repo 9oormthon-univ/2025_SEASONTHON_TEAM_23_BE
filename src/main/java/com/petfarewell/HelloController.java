@@ -15,6 +15,6 @@ public class HelloController {
     @Operation(summary = "테스트", description = "테스트 문구 제공.")
     @GetMapping
     public String hello() {
-        return "PetFarewell is deployed by Github Actions.";
+        return "PetFarewell is deployed by Github Actions!";
     }
 }
