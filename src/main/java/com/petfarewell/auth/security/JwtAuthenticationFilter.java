@@ -2,9 +2,12 @@ package com.petfarewell.auth.security;
 
 import java.io.IOException;
 
+import com.petfarewell.auth.entity.User;
+import com.petfarewell.auth.repository.UserRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,9 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -39,27 +44,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 Claims claims = jwtTokenProvider.parseClaims(token);
-                String subject = claims.getSubject();
+                String userId = claims.getSubject();
 
-                log.info("subject: {}", subject);
-                log.info("claims: {}", claims);
+                if (userId != null && !userId.isBlank()) {
+                    // 1. userId로 DB에서 User 엔티티 조회
+                    User user = userRepository.findById(Long.parseLong(userId))
+                            .orElseThrow(() -> new RuntimeException("User not found"));
 
-                if (subject != null && !subject.isBlank()) {
+                    // 2. User 엔티티로 CustomUserDetails 객체 생성
+                    UserDetails userDetails = new CustomUserDetails(user);
+
+                    // 3. CustomUserDetails 객체를 Principal로 사용하여 Authentication 객체 생성
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
-                                    subject,
+                                    userDetails, // Principal이 CustomUserDetails 객체
                                     null,
-                                    java.util.Collections.emptyList()
+                                    userDetails.getAuthorities() // 권한 정보도 UserDetails에서 가져옴
                             );
+
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                    log.debug("JWT authentication successful for user: {}", subject);
-                } else {
-                    log.warn("JWT token has invalid subject: {}", subject);
-                    SecurityContextHolder.clearContext();
                 }
-
             } catch (ExpiredJwtException e) {
                 log.warn("JWT token expired: {}", e.getMessage());
                 SecurityContextHolder.clearContext();
@@ -77,7 +82,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.clearContext();
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
