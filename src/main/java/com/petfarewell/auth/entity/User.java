@@ -18,9 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "users", indexes = {
-        @Index(name = "idx_users_kakao_id", columnList = "kakao_id", unique = true)
-})
+@Table(name = "users")
 public class User {
 
     @Id
