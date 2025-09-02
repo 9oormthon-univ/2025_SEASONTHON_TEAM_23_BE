@@ -30,7 +30,7 @@ public class TributeService {
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
         Letter letter = letterRepository.findById(letterId)
                 .orElseThrow(() -> new EntityNotFoundException("편지를 찾을 수 없습니다."));
-        TributeMessage message = tributeMessageRepository.findById(request.getMessageId())
+        TributeMessage message = tributeMessageRepository.findById(request.getMessageKey())
                 .orElseThrow(() -> new EntityNotFoundException("헌화 메시지를 찾을 수 없습니다."));
 
         if (letterTributeRepository.existsByUserAndLetter(user, letter)) {

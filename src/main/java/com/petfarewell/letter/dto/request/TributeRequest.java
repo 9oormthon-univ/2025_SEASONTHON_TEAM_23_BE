@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class TributeRequest {
-    @NotNull(message = "메시지 Id는 필수입니다.")
-    private Long messageId;
+    @NotNull(message = "메시지 Key는 필수입니다.")
+    private String messageKey;
 }

@@ -12,9 +12,8 @@ import lombok.NoArgsConstructor;
 public class TributeMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "`key`")
+    private String key;
 
     @Column(name = "text_ko")
     private String textKo;

@@ -6,18 +6,21 @@ import lombok.Getter;
 @Getter
 public class TributeMessageResponse {
 
-    private final Long messageId;
-    private final String content;
+    private final String key;
+    private final String textKo;
+    private final int sortOrder;
 
-    private TributeMessageResponse(Long messageId, String content) {
-        this.messageId = messageId;
-        this.content = content;
+    private TributeMessageResponse(String messageKey, String content, int sortOrder) {
+        this.key = messageKey;
+        this.textKo = content;
+        this.sortOrder = sortOrder;
     }
 
     public static TributeMessageResponse from(TributeMessage tributeMessage) {
         return new TributeMessageResponse(
-                tributeMessage.getId(),
-                tributeMessage.getTextKo()
+                tributeMessage.getKey(),
+                tributeMessage.getTextKo(),
+                tributeMessage.getSortOrder()
         );
     }
 }

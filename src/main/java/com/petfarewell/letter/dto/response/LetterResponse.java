@@ -10,12 +10,13 @@ import java.util.Date;
 @Getter
 public class LetterResponse {
 
-    private final Long letterId;
+    private final Long id;
     private final String content;
     private final String photoUrl;
     private final int tributeCount;
     private final LocalDateTime createdAt;
-    private final AuthorDto author;
+    private final Boolean isPublic;
+    private final Long userId;
 
     public static LetterResponse from(Letter letter) {
         return new LetterResponse(
@@ -24,33 +25,19 @@ public class LetterResponse {
                 letter.getPhotoUrl(),
                 letter.getTributeCount(),
                 letter.getCreatedAt(),
-                AuthorDto.from(letter.getUser())
+                letter.getIsPublic(),
+                letter.getUser().getId()
         );
     }
 
-    private LetterResponse(Long letterId, String content, String photoUrl, int tributeCount, LocalDateTime createdAt, AuthorDto author) {
-        this.letterId = letterId;
+    private LetterResponse(Long letterId, String content, String photoUrl, int tributeCount,
+                           LocalDateTime createdAt, Boolean isPublic, Long userId) {
+        this.id = letterId;
         this.content = content;
         this.photoUrl = photoUrl;
         this.tributeCount = tributeCount;
         this.createdAt = createdAt;
-        this.author = author;
-    }
-
-    @Getter
-    private static class AuthorDto {
-        private final Long userId;
-        private final String nickname;
-        private final String profileImageUrl;
-
-        public static AuthorDto from(User user) {
-            return new AuthorDto(user.getId(), user.getNickname(), user.getProfileImageUrl());
-        }
-
-        private AuthorDto(Long userId, String nickname, String profileImageUrl) {
-            this.userId = userId;
-            this.nickname = nickname;
-            this.profileImageUrl = profileImageUrl;
-        }
+        this.isPublic = isPublic;
+        this.userId = userId;
     }
 }
