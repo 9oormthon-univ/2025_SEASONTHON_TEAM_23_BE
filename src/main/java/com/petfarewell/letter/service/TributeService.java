@@ -50,12 +50,10 @@ public class TributeService {
 
     @Transactional(readOnly = true)
     public List<LetterTribute> findTributesByLetterId(Long letterId) {
-        // 편지가 실제로 존재하는지 먼저 확인 (없으면 EntityNotFoundException 발생)
         if (!letterRepository.existsById(letterId)) {
             throw new EntityNotFoundException("편지를 찾을 수 없습니다. ID: " + letterId);
         }
 
-        // 특정 편지 ID에 해당하는 헌화 목록을 조회하여 반환
         return letterTributeRepository.findAllByLetterId(letterId);
     }
 
