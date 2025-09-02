@@ -63,7 +63,7 @@ public class LetterController {
     }
 
     @PutMapping("/{letterId}")
-    @Operation(summary = "편지 수정", description = "특정 id를 가진 편지의 내용을 수정")
+    @Operation(summary = "편지 수정", description = "특정 id를 가진 편지 수정")
     public ResponseEntity<LetterResponse> updateLetter(
             @PathVariable Long letterId,
             @RequestBody LetterRequest request,
@@ -76,7 +76,7 @@ public class LetterController {
     }
 
     @DeleteMapping("/{letterId}")
-    @Operation(summary = "편지 삭제", description = "특정 id를 가진 편지를 삭제")
+    @Operation(summary = "편지 삭제", description = "특정 id를 가진 편지 삭제")
     public ResponseEntity<Void> deleteLetter(
             @PathVariable Long letterId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -86,7 +86,7 @@ public class LetterController {
     }
 
     @GetMapping("/{letterId}/tributes")
-    @Operation(summary = "특정 편지의 헌화 목록 조회", description = "letterId에 해당하는 편지에 달린 모든 헌화 목록을 조회합니다.")
+    @Operation(summary = "특정 편지의 헌화 리스트 조회", description = "letterId에 해당하는 편지에 달린 모든 헌화 리스트 조회")
     public ResponseEntity<List<TributeResponse>> getTributesForLetter(@PathVariable Long letterId) {
 
         List<LetterTribute> tributes = tributeService.findTributesByLetterId(letterId);

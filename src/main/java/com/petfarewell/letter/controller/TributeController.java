@@ -23,7 +23,7 @@ public class TributeController {
     private final TributeService tributeService;
 
     @GetMapping("messages")
-    @Operation(summary = "헌화 메시지 목록 조회")
+    @Operation(summary = "헌화 메시지 리스트 조회")
     public ResponseEntity<List<TributeMessageResponse>> getTributeMessages() {
         List<TributeMessage> messages = tributeService.findAllTributeMessage();
 
