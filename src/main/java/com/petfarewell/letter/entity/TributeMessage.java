@@ -20,4 +20,10 @@ public class TributeMessage {
 
     @Column(name = "sort_order")
     private int sortOrder;
+
+    public TributeMessage(String key, String textKo, int sortOrder) {
+        this.key = key;
+        this.textKo = textKo;
+        this.sortOrder = sortOrder;
+    }
 }
