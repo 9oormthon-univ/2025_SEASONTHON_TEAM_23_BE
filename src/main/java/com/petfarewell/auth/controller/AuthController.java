@@ -3,8 +3,10 @@ package com.petfarewell.auth.controller;
 import java.util.*;
 
 import com.petfarewell.auth.dto.ErrorResponse;
+import com.petfarewell.auth.security.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,43 +95,19 @@ public class AuthController {
 
     @GetMapping("/me")
     @Operation(summary = "현재 사용자 정보 조회", description = "JWT 토큰으로 현재 로그인한 사용자 정보를 조회")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = AuthTokensResponse.UserSummary.class))),
-            @ApiResponse(responseCode = "401", description = "권한 없음", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<?> getCurrentUser() {
-        try {
-            var authentication = SecurityContextHolder.getContext().getAuthentication();
-            log.info("Current user: {}", authentication);
-            
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증되지 않은 사용자입니다."));
-            }
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-            String userId = authentication.getName();
-            log.info("current user userId: {}", userId);
-
-            if ("anonymousUser".equals(userId)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "유효한 JWT 토큰이 필요합니다."));
-            }
-
-            try {
-                Long.parseLong(userId);
-            } catch (NumberFormatException e) {
-                log.error("Invalid userId format: {}", userId);
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "유효하지 않은 사용자 ID 형식입니다."));
-            }
-            
-            User user = userService.getUserById(Long.parseLong(userId));
-
-            var summary = new AuthTokensResponse.UserSummary(user.getId(), user.getNickname(),
-                    user.getProfileImageUrl());
-            return ResponseEntity.ok(summary);
-
-        } catch (Exception e) {
-            log.error("Failed to get current user: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증되지 않은 사용자입니다."));
         }
+
+        var summary = new AuthTokensResponse.UserSummary(
+                userDetails.getId(),
+                userDetails.getNickname(),
+                userDetails.getProfileImageUrl()
+        );
+
+        return ResponseEntity.ok(summary);
     }
 
     @PostMapping("/refresh")
@@ -140,7 +118,7 @@ public class AuthController {
     })
     public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request) {
         if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "refreshToken is required"));
+            return ResponseEntity.badRequest().body(Map.of("message", "리프레시 토큰이 필요합니다."));
         }
 
         try {
@@ -173,7 +151,7 @@ public class AuthController {
     })
     public ResponseEntity<?> logout(@RequestBody RefreshTokenRequest request) {
         if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "refreshToken is required"));
+            return ResponseEntity.badRequest().body(Map.of("message", "리프레시 토큰이 필요합니다."));
         }
 
         try {
