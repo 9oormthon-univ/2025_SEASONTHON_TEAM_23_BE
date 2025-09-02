@@ -8,10 +8,12 @@ import com.petfarewell.dailylog.entity.DailyTopic;
 import com.petfarewell.dailylog.repository.DailyLogRepository;
 import com.petfarewell.dailylog.repository.DailyTopicRepository;
 import com.petfarewell.global.exception.AlreadyWrittenException;
-import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -100,9 +102,11 @@ public class DailyLogService {
         return content.length() <= 10 ? content : content.substring(0, 10) + " 더보기";
     }
 
-    public DailyLogDetailResponse getDetail(Long userId, Long logId) {
+    @Transactional(readOnly = true)
+    public DailyLogDetailResponse getDailyLogDetail(Long userId, Long logId) {
         DailyLog log = dailyLogRepository.findByIdAndUserIdAndDeletedFalse(logId, userId)
-                .orElseThrow(() -> new RuntimeException("일기를 찾을 수 없습니다."));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 일기를 찾을 수 없습니다."));
 
         return DailyLogDetailResponse.builder()
                 .id(log.getId())

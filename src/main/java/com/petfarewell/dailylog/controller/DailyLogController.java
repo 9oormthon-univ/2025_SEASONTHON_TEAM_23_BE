@@ -2,12 +2,15 @@ package com.petfarewell.dailylog.controller;
 
 import com.petfarewell.dailylog.dto.*;
 import com.petfarewell.dailylog.service.DailyLogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "데일리로그 API", description = "사용자가 랜덤 주제를 받고, 데일리 로그를 작성하고 확인하는 API입니다.")
 @RestController
 @RequestMapping("/daily-log")
 @RequiredArgsConstructor
@@ -15,25 +18,33 @@ public class DailyLogController {
 
     private final DailyLogService service;
 
+    @Operation(summary = "랜덤 주제 생성 API", description = "AI가 매일 1개의 주제를 던져줍니다.")
+    @GetMapping("/topic")
+    public ResponseEntity<DailyTopicResponse> getRandomTopic() {
+        return ResponseEntity.ok(service.getRandomTopic());
+    }
 
+    @Operation(summary = "일기 작성 및 공감문 생성 API", description = "사용자가 일기를 작성하고 이를 저장하고, 바탕으로 하여 AI가 짧은 공감문을 생성합니다.")
     @PostMapping("/create")
     public ResponseEntity<DailyLogResponse> create(@RequestParam("userId") Long userId, @RequestBody DailyLogRequest request) {
         DailyLogResponse response = service.create(userId, request);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/topic")
-    public ResponseEntity<DailyTopicResponse> getRandomTopic() {
-        return ResponseEntity.ok(service.getRandomTopic());
-    }
 
+    @Operation(summary = "일기 전체 리스트 조회 API", description = "사용자가 작성한 일기를 전체 조회합니다.")
     @GetMapping("/list")
     public List<DailyLogSummaryResponse> getAllLogs(@RequestParam("userId") Long userId) {
         return service.getAllLogs(userId);
     }
 
-    @GetMapping("/detail/{id}")
-    public DailyLogDetailResponse getLogDetail(@RequestParam("userId") Long userId, @RequestParam("logId") Long logId) {
-        return service.getDetail(userId, logId);
+    @Operation(summary = "일기 상세 조회 API", description = "해당 일기에 대한 정보를 상세 조회합니다.")
+    @GetMapping("/{logId}")
+    public ResponseEntity<DailyLogDetailResponse> getDailyLogDetail(
+            @PathVariable("logId") Long logId,
+            @RequestParam("userId") Long userId
+    ) {
+        DailyLogDetailResponse response = service.getDailyLogDetail(userId, logId);
+        return ResponseEntity.ok(response);
     }
 }
