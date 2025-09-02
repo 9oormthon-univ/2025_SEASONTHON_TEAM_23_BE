@@ -2,6 +2,7 @@ package com.petfarewell.letter.entity;
 
 import com.petfarewell.auth.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -26,13 +27,14 @@ public class Letter {
     private User user;
 
     @Column(name = "content")
+    @Size(max = 100)
     private String content;
 
     @Column(name = "photo_url")
     private String photoUrl;
 
     @Column(name = "is_public")
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @Column(name = "tribute_count", nullable = false)
     private int tributeCount;
@@ -42,7 +44,7 @@ public class Letter {
     private LocalDateTime createdAt;
 
     @Builder
-    public Letter(User user, String content, String photoUrl, boolean isPublic, int tributedCount, Instant createdAt) {
+    public Letter(User user, String content, String photoUrl, boolean isPublic, int tributedCount) {
         this.user = user;
         this.content = content;
         this.photoUrl = photoUrl;
