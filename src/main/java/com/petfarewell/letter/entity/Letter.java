@@ -8,6 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -41,6 +43,9 @@ public class Letter {
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LetterTribute> tributes = new ArrayList<>();
 
     @Builder
     public Letter(User user, String content, String photoUrl, boolean isPublic, int tributedCount) {

@@ -23,15 +23,14 @@ public class LetterService {
 
     @Transactional
     public Letter saveLetter(Long userId, LetterRequest request) {
-
         User user = UserRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         Letter newLetter = Letter.builder()
+                .user(user)
                 .content(request.getContent())
                 .photoUrl(request.getPhotoUrl())
                 .isPublic(request.getIsPublic())
-                .user(user)
                 .tributedCount(0)
                 .build();
 
@@ -40,20 +39,22 @@ public class LetterService {
 
     @Transactional
     public List<Letter> findPublicLetters() {
-
         return letterRepository.findAllByIsPublicOrderByCreatedAtDesc(true);
     }
 
     @Transactional
-    public Letter findLetterById(Long id) {
+    public List<Letter> findMyLetters(Long userId) {
+        return letterRepository.findAllByUserId(userId);
+    }
 
+    @Transactional
+    public Letter findLetterById(Long id) {
         return letterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("편지를 찾을 수 없습니다. ID: " + id));
     }
 
     @Transactional
     public Letter updateLetter(Long letterId, Long currentUserId, LetterRequest request) {
-
         Letter letter = letterRepository.findById(letterId)
                 .orElseThrow(() -> new EntityNotFoundException("편지를 찾을 수 없습니다. ID: " + letterId));
 
@@ -70,7 +71,6 @@ public class LetterService {
 
     @Transactional
     public void deleteLetter(Long letterId, Long currentUserId) {
-
         Letter letter = findLetterById(letterId);
 
         if(!letter.getUser().getId().equals(currentUserId)) {

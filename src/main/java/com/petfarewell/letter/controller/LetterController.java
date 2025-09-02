@@ -52,6 +52,18 @@ public class LetterController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me")
+    @Operation(summary = "내 편지 리스트 조회", description = "나의 전체 공개/비공개 편지 조회")
+    public ResponseEntity<List<LetterResponse>> getMyLetters(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<Letter> letters = letterService.findMyLetters(userDetails.getId());
+
+        List<LetterResponse> response = letters.stream()
+                .map(LetterResponse::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{letterId}")
     @Operation(summary = "단일 편지 상세 보기", description = "특정 id를 가진 단일 편지를 조회")
     public ResponseEntity<LetterResponse> getLetter(@PathVariable Long letterId) {
