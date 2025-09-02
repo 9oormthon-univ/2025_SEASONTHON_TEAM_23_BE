@@ -19,6 +19,6 @@ public class TributeMessage {
     @Column(name = "text_ko")
     private String textKo;
 
-//    @Column(name = "sort_order")
-//    private int sortOrder;
+    @Column(name = "sort_order")
+    private int sortOrder;
 }
