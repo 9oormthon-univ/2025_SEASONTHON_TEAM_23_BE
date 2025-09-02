@@ -1,11 +1,9 @@
 package com.petfarewell.letter.dto.response;
 
-import com.petfarewell.auth.entity.User;
 import com.petfarewell.letter.entity.Letter;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 public class LetterResponse {
