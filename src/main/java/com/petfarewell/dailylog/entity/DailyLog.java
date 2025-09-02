@@ -2,12 +2,14 @@ package com.petfarewell.dailylog.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "daily_log")
-@Getter
+@Getter @Setter
 public class DailyLog {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,10 +19,9 @@ public class DailyLog {
     private Long userId;
 
     @Column(name = "log_date", nullable = false)
-    private LocalDateTime logDate;
+    private LocalDate logDate;
 
     private Integer mood;
-    private String title;
 
     @Lob
     private String content;
@@ -39,16 +40,6 @@ public class DailyLog {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    void prePersist() {
-        var now = LocalDateTime.now();
-        createdAt = now; updatedAt = now;
-    }
-
-    @PreUpdate
-    void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 
 
 
