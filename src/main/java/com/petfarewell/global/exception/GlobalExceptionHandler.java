@@ -16,9 +16,4 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("ALREADY_WRITTEN", ex.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleEtc(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "서버 오류가 발생했습니다."));
-    }
 }
