@@ -1,10 +1,10 @@
 package com.petfarewell.letter.controller;
 
 import com.petfarewell.auth.security.CustomUserDetails;
-import com.petfarewell.letter.dto.LetterRequest;
-import com.petfarewell.letter.dto.LetterResponse;
-import com.petfarewell.letter.dto.TributeRequest;
-import com.petfarewell.letter.dto.TributeResponse;
+import com.petfarewell.letter.dto.request.LetterRequest;
+import com.petfarewell.letter.dto.response.LetterResponse;
+import com.petfarewell.letter.dto.request.TributeRequest;
+import com.petfarewell.letter.dto.response.TributeResponse;
 import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.LetterTribute;
 import com.petfarewell.letter.service.LetterService;

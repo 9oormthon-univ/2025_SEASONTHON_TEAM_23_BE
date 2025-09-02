@@ -2,7 +2,7 @@ package com.petfarewell.letter.service;
 
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
-import com.petfarewell.letter.dto.LetterRequest;
+import com.petfarewell.letter.dto.request.LetterRequest;
 import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.repository.LetterRepository;
 import jakarta.persistence.EntityNotFoundException;

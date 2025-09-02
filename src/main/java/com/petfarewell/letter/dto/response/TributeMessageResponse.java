@@ -1,4 +1,4 @@
-package com.petfarewell.letter.dto;
+package com.petfarewell.letter.dto.response;
 
 import com.petfarewell.letter.entity.TributeMessage;
 import lombok.Getter;

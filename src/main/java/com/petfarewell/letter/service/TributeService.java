@@ -2,7 +2,7 @@ package com.petfarewell.letter.service;
 
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
-import com.petfarewell.letter.dto.TributeRequest;
+import com.petfarewell.letter.dto.request.TributeRequest;
 import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.LetterTribute;
 import com.petfarewell.letter.entity.TributeMessage;

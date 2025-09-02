@@ -1,4 +1,4 @@
-package com.petfarewell.letter.dto;
+package com.petfarewell.letter.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
