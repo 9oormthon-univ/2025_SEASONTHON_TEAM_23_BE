@@ -7,7 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -39,7 +39,7 @@ public class Letter {
 
     @CreatedDate
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Builder
     public Letter(User user, String content, String photoUrl, boolean isPublic, int tributedCount, Instant createdAt) {

@@ -3,6 +3,8 @@ package com.petfarewell.letter.dto.response;
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.letter.entity.Letter;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -12,7 +14,7 @@ public class LetterResponse {
     private final String content;
     private final String photoUrl;
     private final int tributeCount;
-    private final Date createdAt;
+    private final LocalDateTime createdAt;
     private final AuthorDto author;
 
     public static LetterResponse from(Letter letter) {
@@ -26,7 +28,7 @@ public class LetterResponse {
         );
     }
 
-    private LetterResponse(Long letterId, String content, String photoUrl, int tributeCount, Date createdAt, AuthorDto author) {
+    private LetterResponse(Long letterId, String content, String photoUrl, int tributeCount, LocalDateTime createdAt, AuthorDto author) {
         this.letterId = letterId;
         this.content = content;
         this.photoUrl = photoUrl;
