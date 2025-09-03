@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/letters")
+@RequestMapping("/letters")
 @Tag(name = "Letter", description = "한마디 편지")
 public class LetterController {
     private final LetterService letterService;

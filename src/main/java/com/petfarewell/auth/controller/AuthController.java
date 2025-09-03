@@ -3,6 +3,7 @@ package com.petfarewell.auth.controller;
 import java.util.*;
 
 import com.petfarewell.auth.dto.ErrorResponse;
+import com.petfarewell.auth.dto.response.UserResponse;
 import com.petfarewell.auth.security.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @Tag(name = "Auth", description = "카카오 로그인 및 JWT 인증 API")
 @Slf4j
 public class AuthController {
@@ -95,19 +96,16 @@ public class AuthController {
 
     @GetMapping("/me")
     @Operation(summary = "현재 사용자 정보 조회", description = "JWT 토큰으로 현재 로그인한 사용자 정보를 조회")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponse.class)))
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증되지 않은 사용자입니다."));
         }
 
-        var summary = new AuthTokensResponse.UserSummary(
-                userDetails.getId(),
-                userDetails.getNickname(),
-                userDetails.getProfileImageUrl()
-        );
+        UserResponse response = new UserResponse(userDetails.getId(),userDetails.getNickname(),userDetails.getProfileImageUrl());
 
-        return ResponseEntity.ok(summary);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh")

@@ -33,19 +33,4 @@ public class TributeResponse {
                 tribute.getCreatedAt()
         );
     }
-
-    @Getter
-    private static class AuthorDto {
-        private final Long userId;
-        private final String nickname;
-
-        private AuthorDto(Long userId, String nickname) {
-            this.userId = userId;
-            this.nickname = nickname;
-        }
-
-        public static AuthorDto from(User user) {
-            return new AuthorDto(user.getId(), user.getNickname());
-        }
-    }
 }

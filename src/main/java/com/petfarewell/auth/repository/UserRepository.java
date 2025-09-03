@@ -8,5 +8,6 @@ import com.petfarewell.auth.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByKakaoId(Long kakaoId);
+    Optional<Long>findRecentTributeCountById(Long userId);
 }
 
