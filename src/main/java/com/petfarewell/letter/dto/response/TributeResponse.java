@@ -1,6 +1,5 @@
 package com.petfarewell.letter.dto.response;
 
-import com.petfarewell.auth.entity.User;
 import com.petfarewell.letter.entity.LetterTribute;
 import lombok.Getter;
 

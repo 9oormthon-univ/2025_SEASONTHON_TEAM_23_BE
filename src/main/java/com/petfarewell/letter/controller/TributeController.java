@@ -3,7 +3,6 @@ package com.petfarewell.letter.controller;
 import com.petfarewell.auth.security.CustomUserDetails;
 import com.petfarewell.letter.dto.response.NotificationResponse;
 import com.petfarewell.letter.dto.response.TributeMessageResponse;
-import com.petfarewell.letter.entity.Notification;
 import com.petfarewell.letter.entity.TributeMessage;
 import com.petfarewell.letter.service.NotificationService;
 import com.petfarewell.letter.service.TributeService;
