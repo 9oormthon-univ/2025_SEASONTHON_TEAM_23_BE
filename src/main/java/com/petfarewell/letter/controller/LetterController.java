@@ -53,7 +53,7 @@ public class LetterController {
     }
 
     @GetMapping("/me")
-    @Operation(summary = "내 편지 리스트 조회", description = "나의 전체 공개/비공개 편지 조회")
+    @Operation(summary = "내 편지 리스트 조회", description = "내가 작성한 모든 편지 리스트 조회")
     public ResponseEntity<List<LetterResponse>> getMyLetters(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<Letter> letters = letterService.findMyLetters(userDetails.getId());
 
