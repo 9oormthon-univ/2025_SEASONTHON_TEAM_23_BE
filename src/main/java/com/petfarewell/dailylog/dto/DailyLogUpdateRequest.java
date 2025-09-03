@@ -2,12 +2,8 @@ package com.petfarewell.dailylog.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @Data
-public class DailyLogRequest {
-    private LocalDate logDate;
+public class DailyLogUpdateRequest {
     private Integer mood;
     private String content;
     private boolean needAiReflection;
