@@ -50,11 +50,13 @@ public class DailyLogController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "일기 수정 API", description = "사용자가 수정한 일기를 저장합니다. 여기서도 ai 공감문 버튼을 활성화한 경우 공감문을 수정된 일기 기반으로 재생성하여 저장합니다.")
     @PutMapping("/update/{logId}")
     public void updateDailyLog(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("logId") Long logId, @RequestBody DailyLogUpdateRequest request) {
         service.update(userDetails.getId(), logId, request);
     }
 
+    @Operation(summary = "일기 삭제 API", description = "일기를 삭제 처리합니다.")
     @DeleteMapping("/delete/{logId}")
     public void deleteDailyLog(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("logId") Long logId) {
         service.delete(userDetails.getId(), logId);
