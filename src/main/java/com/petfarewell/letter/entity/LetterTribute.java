@@ -41,5 +41,9 @@ public class LetterTribute {
         this.letter = letter;
         this.user = user;
         this.message = message;
+
+        if (letter != null) {
+            letter.getTributes().add(this);
+        }
     }
 }

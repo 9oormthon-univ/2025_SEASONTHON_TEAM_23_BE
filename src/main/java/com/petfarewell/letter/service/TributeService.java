@@ -6,9 +6,11 @@ import com.petfarewell.letter.dto.request.TributeRequest;
 import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.LetterTribute;
 import com.petfarewell.letter.entity.TributeMessage;
+import com.petfarewell.letter.entity.Notification;
 import com.petfarewell.letter.repository.LetterRepository;
 import com.petfarewell.letter.repository.LetterTributeRepository;
 import com.petfarewell.letter.repository.TributeMessageRepository;
+import com.petfarewell.letter.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class TributeService {
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
     private final TributeMessageRepository tributeMessageRepository;
+    private final NotificationRepository tributeNotificationRepository;
 
     @Transactional
     public LetterTribute addTribute(Long letterId, Long userId, TributeRequest request) {
@@ -42,10 +45,18 @@ public class TributeService {
                 .letter(letter)
                 .message(message)
                 .build();
+        letterTributeRepository.save(tribute);
+
+        User recipient = letter.getUser();
+
+        Notification notification = tributeNotificationRepository.findByUser(recipient)
+                .orElse(new Notification(recipient));
+
+        notification.incrementTributeCount();
 
         letter.incrementTributeCount();
 
-        return letterTributeRepository.save(tribute);
+        return tribute;
     }
 
     @Transactional(readOnly = true)

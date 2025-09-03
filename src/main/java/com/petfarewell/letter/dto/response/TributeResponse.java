@@ -1,6 +1,5 @@
 package com.petfarewell.letter.dto.response;
 
-import com.petfarewell.auth.entity.User;
 import com.petfarewell.letter.entity.LetterTribute;
 import lombok.Getter;
 
@@ -32,20 +31,5 @@ public class TributeResponse {
                 tribute.getMessage().getKey(),
                 tribute.getCreatedAt()
         );
-    }
-
-    @Getter
-    private static class AuthorDto {
-        private final Long userId;
-        private final String nickname;
-
-        private AuthorDto(Long userId, String nickname) {
-            this.userId = userId;
-            this.nickname = nickname;
-        }
-
-        public static AuthorDto from(User user) {
-            return new AuthorDto(user.getId(), user.getNickname());
-        }
     }
 }

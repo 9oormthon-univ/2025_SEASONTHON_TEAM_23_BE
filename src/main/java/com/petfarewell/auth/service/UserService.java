@@ -2,6 +2,8 @@ package com.petfarewell.auth.service;
 
 import java.util.Optional;
 
+import com.petfarewell.letter.entity.Notification;
+import com.petfarewell.letter.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final NotificationRepository tributeNotificationRepositoy;
 
     @Transactional
     public User registerOrUpdateKakaoUser(KakaoUserInfoResponse userInfo) {
@@ -57,7 +60,11 @@ public class UserService {
                             ? userInfo.getKakaoAccount().getProfile().getProfileImageUrl() : null
             );
             log.info("Created new user with kakaoId: {}", newUser.getKakaoId());
-            return userRepository.save(newUser);
+
+            User user = userRepository.save(newUser);
+            tributeNotificationRepositoy.save(new Notification(newUser));
+
+            return user;
         }
     }
 

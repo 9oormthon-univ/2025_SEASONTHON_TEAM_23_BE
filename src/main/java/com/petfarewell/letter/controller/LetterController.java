@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/letters")
+@RequestMapping("/letters")
 @Tag(name = "Letter", description = "한마디 편지")
 public class LetterController {
     private final LetterService letterService;
@@ -44,6 +44,18 @@ public class LetterController {
     @Operation(summary = "전체 공개 편지 리스트 조회", description = "전체 공개로 설정된 모든 사용자의 편지 리스트 조회")
     public ResponseEntity<List<LetterResponse>> getPublicLetters() {
         List<Letter> letters = letterService.findPublicLetters();
+
+        List<LetterResponse> response = letters.stream()
+                .map(LetterResponse::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "내 편지 리스트 조회", description = "내가 작성한 모든 편지 리스트 조회")
+    public ResponseEntity<List<LetterResponse>> getMyLetters(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<Letter> letters = letterService.findMyLetters(userDetails.getId());
 
         List<LetterResponse> response = letters.stream()
                 .map(LetterResponse::from)
