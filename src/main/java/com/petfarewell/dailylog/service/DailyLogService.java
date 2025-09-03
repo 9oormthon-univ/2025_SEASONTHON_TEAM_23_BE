@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -63,6 +64,7 @@ public class DailyLogService {
         });
     }
 
+    @Transactional(readOnly = true)
     public DailyTopicResponse getRandomTopic() {
         LocalDate today = LocalDate.now();
 
@@ -83,6 +85,7 @@ public class DailyLogService {
                 });
     }
 
+    @Transactional(readOnly = true)
     public List<DailyLogSummaryResponse> getAllLogs(Long userId) {
         List<DailyLog> logs = dailyLogRepository.findByUserIdAndDeletedFalseOrderByLogDateDesc(userId);
 
@@ -116,6 +119,32 @@ public class DailyLogService {
                 .mood(log.getMood())
                 .aiReflection(log.getAiReflection())
                 .build();
+    }
+
+    // 수정
+    @Transactional
+    public void update(Long userId, Long logId, DailyLogUpdateRequest request){
+        DailyLog log = dailyLogRepository.findByIdAndUserIdAndDeletedFalse(logId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일기를 찾을 수 없습니다."));
+
+        log.setMood(request.getMood());
+        log.setContent(request.getContent());
+        log.setUpdatedAt(LocalDateTime.now());
+
+        if (request.isNeedAiReflection() && log.getContent() != null && !log.getContent().isBlank()) {
+            // 비동기로 공감문 생성 후 저장
+            generateAndSaveReflectionAsync(log.getId(), log.getContent());
+        }
+    }
+
+    // 삭제
+    @Transactional
+    public void delete(Long userId, Long logId) {
+        DailyLog log = dailyLogRepository.findByIdAndUserIdAndDeletedFalse(logId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일기를 찾을 수 없습니다."));
+
+        log.setDeleted(true);
+        log.setUpdatedAt(LocalDateTime.now());
     }
 
 }

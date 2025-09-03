@@ -49,4 +49,14 @@ public class DailyLogController {
         DailyLogDetailResponse response = service.getDailyLogDetail(userDetails.getId(), logId);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update/{logId}")
+    public void updateDailyLog(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("logId") Long logId, @RequestBody DailyLogUpdateRequest request) {
+        service.update(userDetails.getId(), logId, request);
+    }
+
+    @DeleteMapping("/delete/{logId}")
+    public void deleteDailyLog(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("logId") Long logId) {
+        service.delete(userDetails.getId(), logId);
+    }
 }
