@@ -53,5 +53,9 @@ public class User {
         user.setProfileImageUrl(profileImageUrl);
         return user;
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
 

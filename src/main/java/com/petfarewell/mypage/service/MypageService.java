@@ -1,5 +1,6 @@
 package com.petfarewell.mypage.service;
 
+import com.petfarewell.auth.dto.response.UserResponse;
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
 import com.petfarewell.dailylog.repository.DailyLogRepository;
@@ -31,5 +32,13 @@ public class MypageService {
         long tributeCount = letterTributeRepository.countByUserId(user.getId());
 
         return new UserActivitySummary(diaryCount, letterCount, tributeCount);
+    }
+
+    @Transactional
+    public void updateNickname(Long userId, String newNinkname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        user.updateNickname(newNinkname);
     }
 }
