@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,9 +31,10 @@ public class LetterController {
     @PostMapping
     @Operation(summary = "한마디 편지 작성", description = "한마디 편지를 DB에 저장")
     public ResponseEntity<LetterResponse> writeLetter(
-            @RequestBody LetterRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Letter savedLetter = letterService.saveLetter(userDetails.getId(), request);
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @ModelAttribute LetterRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        Letter savedLetter = letterService.saveLetter(userDetails.getId(), request, imageFile);
 
         LetterResponse response = LetterResponse.from(savedLetter);
 
@@ -65,7 +67,7 @@ public class LetterController {
 
     @GetMapping("/{letterId}")
     @Operation(summary = "단일 편지 상세 보기", description = "특정 id를 가진 단일 편지를 조회")
-    public ResponseEntity<LetterResponse> getLetter(@PathVariable Long letterId) {
+    public ResponseEntity<LetterResponse> getLetter(@PathVariable("letterId") Long letterId) {
         Letter findLetter = letterService.findLetterById(letterId);
 
         LetterResponse response = LetterResponse.from(findLetter);
@@ -76,10 +78,11 @@ public class LetterController {
     @PutMapping("/{letterId}")
     @Operation(summary = "편지 수정", description = "특정 id를 가진 편지 수정")
     public ResponseEntity<LetterResponse> updateLetter(
-            @PathVariable Long letterId,
-            @RequestBody LetterRequest request,
+            @PathVariable("letterId") Long letterId,
+            @ModelAttribute LetterRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Letter updatedLetter = letterService.updateLetter(letterId, userDetails.getId(), request);
+        Letter updatedLetter = letterService.updateLetter(letterId, userDetails.getId(), request, imageFile);
 
         LetterResponse response = LetterResponse.from(updatedLetter);
 
@@ -89,7 +92,7 @@ public class LetterController {
     @DeleteMapping("/{letterId}")
     @Operation(summary = "편지 삭제", description = "특정 id를 가진 편지 삭제")
     public ResponseEntity<Void> deleteLetter(
-            @PathVariable Long letterId,
+            @PathVariable("letterId") Long letterId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         letterService.deleteLetter(letterId, userDetails.getId());
 
