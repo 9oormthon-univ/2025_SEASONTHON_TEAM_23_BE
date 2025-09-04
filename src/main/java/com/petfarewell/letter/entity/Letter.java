@@ -27,11 +27,11 @@ public class Letter {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     @Size(max = 100)
     private String content;
 
-    @Column(name = "photo_url")
+    @Column(name = "photo_url", nullable = false)
     private String photoUrl;
 
     @Column(name = "is_public")
