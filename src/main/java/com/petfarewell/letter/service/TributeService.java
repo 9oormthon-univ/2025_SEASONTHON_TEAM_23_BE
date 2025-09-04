@@ -10,11 +10,15 @@ import com.petfarewell.letter.repository.LetterTributeRepository;
 import com.petfarewell.letter.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TributeService {
@@ -42,13 +46,28 @@ public class TributeService {
 
         User recipient = letter.getUser();
 
-        Notification notification = tributeNotificationRepository.findByUser(recipient).orElse(tributeNotificationRepository.save(new Notification(recipient)));
+        Notification notification = findOrCreateNotificationForUser(recipient);
 
         notification.incrementTributeCount();
 
         letter.incrementTributeCount();
 
         return tribute;
+    }
+
+    private Notification findOrCreateNotificationForUser(User user) {
+        Optional<Notification> notificationOptional = tributeNotificationRepository.findByUser(user);
+
+        if (notificationOptional.isPresent()) {
+            return notificationOptional.get();
+        } else {
+            try {
+                return tributeNotificationRepository.saveAndFlush(new Notification(user));
+            } catch (DataIntegrityViolationException e) {
+                return tributeNotificationRepository.findByUser(user)
+                        .orElseThrow(() -> new RuntimeException("경쟁 상태 후 Notification 조회 실패", e));
+            }
+        }
     }
 
     @Transactional(readOnly = true)
