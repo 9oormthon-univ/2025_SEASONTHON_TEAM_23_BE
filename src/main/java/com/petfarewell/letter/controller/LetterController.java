@@ -3,7 +3,6 @@ package com.petfarewell.letter.controller;
 import com.petfarewell.auth.security.CustomUserDetails;
 import com.petfarewell.letter.dto.request.LetterRequest;
 import com.petfarewell.letter.dto.response.LetterResponse;
-import com.petfarewell.letter.dto.request.TributeRequest;
 import com.petfarewell.letter.dto.response.TributeResponse;
 import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.LetterTribute;
@@ -114,9 +113,8 @@ public class LetterController {
     @Operation(summary = "디지털 헌화", description = "특정 편지에 헌화")
     public ResponseEntity<TributeResponse> addTribute(
             @PathVariable Long letterId,
-            @RequestBody TributeRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        LetterTribute savedTribute = tributeService.addTribute(letterId, userDetails.getId(), request);
+        LetterTribute savedTribute = tributeService.addTribute(letterId, userDetails.getId());
 
         TributeResponse response = TributeResponse.from(savedTribute);
 

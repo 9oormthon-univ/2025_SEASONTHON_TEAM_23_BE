@@ -28,19 +28,14 @@ public class LetterTribute {
     @JoinColumn(name = "from_user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "message_key", nullable = false)
-    private TributeMessage message;
-
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public LetterTribute(Letter letter, User user, TributeMessage message) {
+    public LetterTribute(Letter letter, User user) {
         this.letter = letter;
         this.user = user;
-        this.message = message;
 
         if (letter != null) {
             letter.getTributes().add(this);
