@@ -42,8 +42,7 @@ public class TributeService {
 
         User recipient = letter.getUser();
 
-        Notification notification = tributeNotificationRepository.findByUser(recipient)
-                .orElse(new Notification(recipient));
+        Notification notification = tributeNotificationRepository.findByUser(recipient).orElse(tributeNotificationRepository.save(new Notification(recipient)));
 
         notification.incrementTributeCount();
 
