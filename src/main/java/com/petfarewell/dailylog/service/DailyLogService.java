@@ -31,9 +31,9 @@ public class DailyLogService {
     public DailyLogResponse create(Long userId, DailyLogRequest request) {
         LocalDate date = request.getLogDate() != null ? request.getLogDate() : LocalDate.now();
 
-//        if (dailyLogRepository.existsByUserIdAndLogDateAndDeletedFalse(userId, date)) {
-//            throw new AlreadyWrittenException("해당 날짜에 이미 일기를 작성하셨습니다.");
-//        }
+        if (dailyLogRepository.existsByUserIdAndLogDateAndDeletedFalse(userId, date)) {
+            throw new AlreadyWrittenException("해당 날짜에 이미 일기를 작성하셨습니다.");
+        }
 
         // 오늘 날짜의 주제 가져오기 (없으면 예외 또는 생성)
         String topic = getRandomTopic().getTopic();
@@ -64,7 +64,6 @@ public class DailyLogService {
         });
     }
 
-    @Transactional(readOnly = true)
     public DailyTopicResponse getRandomTopic() {
         LocalDate today = LocalDate.now();
 
