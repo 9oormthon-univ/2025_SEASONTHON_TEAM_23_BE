@@ -78,7 +78,7 @@ public class LetterController {
     @PutMapping("/{letterId}")
     @Operation(summary = "편지 수정", description = "특정 id를 가진 편지 수정")
     public ResponseEntity<LetterResponse> updateLetter(
-            @PathVariable Long letterId,
+            @PathVariable("letterId") Long letterId,
             @ModelAttribute LetterRequest request,
             @RequestPart(value = "image", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -92,7 +92,7 @@ public class LetterController {
     @DeleteMapping("/{letterId}")
     @Operation(summary = "편지 삭제", description = "특정 id를 가진 편지 삭제")
     public ResponseEntity<Void> deleteLetter(
-            @PathVariable Long letterId,
+            @PathVariable("letterId") Long letterId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         letterService.deleteLetter(letterId, userDetails.getId());
 
