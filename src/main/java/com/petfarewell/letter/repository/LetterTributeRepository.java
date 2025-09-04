@@ -10,4 +10,5 @@ import java.util.List;
 public interface LetterTributeRepository extends JpaRepository<LetterTribute, Long> {
     boolean existsByUserAndLetter(User user, Letter letter);
     List<LetterTribute> findAllByLetterId(Long letterId);
+    long countByUserId(Long userId);
 }
