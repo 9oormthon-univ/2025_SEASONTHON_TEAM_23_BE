@@ -1,5 +1,6 @@
 package com.petfarewell.letter.repository;
 
+import com.petfarewell.auth.entity.User;
 import com.petfarewell.letter.entity.Letter;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
     List<Letter> findAllByIsPublicOrderByCreatedAtDesc(boolean isPublic);
     Optional<Letter> findById(Long id);
     List<Letter> findAllByUserId(Long Id);
+    long countByUserId(Long userId);
 }
