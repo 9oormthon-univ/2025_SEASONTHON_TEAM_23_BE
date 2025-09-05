@@ -24,10 +24,10 @@ public class MypageService {
     @Transactional(readOnly = true)
     public UserActivitySummaryResponse getUserActivitySummary(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        long diaryCount = diaryRepository.countByUserId(user.getId());
-        long letterCount = letterRepository.countByUserId(user.getId());
+        long diaryCount = diaryRepository.countByUser(user);
+        long letterCount = letterRepository.countByUser(user);
         long tributeCount = letterTributeRepository.getTotalTributeCountByUserId(user.getId());
 
         return new UserActivitySummaryResponse(diaryCount, letterCount, tributeCount);

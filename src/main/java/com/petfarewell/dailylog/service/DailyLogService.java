@@ -1,6 +1,8 @@
 package com.petfarewell.dailylog.service;
 
 
+import com.petfarewell.auth.entity.User;
+import com.petfarewell.auth.repository.UserRepository;
 import com.petfarewell.dailylog.ai.OpenAiClient;
 import com.petfarewell.dailylog.dto.*;
 import com.petfarewell.dailylog.entity.DailyLog;
@@ -8,6 +10,7 @@ import com.petfarewell.dailylog.entity.DailyTopic;
 import com.petfarewell.dailylog.repository.DailyLogRepository;
 import com.petfarewell.dailylog.repository.DailyTopicRepository;
 import com.petfarewell.global.exception.AlreadyWrittenException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +29,15 @@ public class DailyLogService {
     private final DailyLogRepository dailyLogRepository;
     private final DailyTopicRepository dailyTopicRepository;
     private final OpenAiClient openAiClient;
+    private final UserRepository userRepository;
 
     @Transactional
     public DailyLogResponse create(Long userId, DailyLogRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
         LocalDate date = request.getLogDate() != null ? request.getLogDate() : LocalDate.now();
 
-        if (dailyLogRepository.existsByUserIdAndLogDateAndDeletedFalse(userId, date)) {
+        if (dailyLogRepository.existsByUserAndLogDateAndDeletedFalse(user, date)) {
             throw new AlreadyWrittenException("해당 날짜에 이미 일기를 작성하셨습니다.");
         }
 
@@ -39,7 +45,7 @@ public class DailyLogService {
         String topic = getRandomTopic().getTopic();
 
         DailyLog log = new DailyLog();
-        log.setUserId(userId);
+        log.setUser(user);
         log.setLogDate(date);
         log.setMood(request.getMood());
         log.setContent(request.getContent());
@@ -86,7 +92,9 @@ public class DailyLogService {
 
     @Transactional(readOnly = true)
     public List<DailyLogSummaryResponse> getAllLogs(Long userId) {
-        List<DailyLog> logs = dailyLogRepository.findByUserIdAndDeletedFalseOrderByLogDateDesc(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+        List<DailyLog> logs = dailyLogRepository.findByUserAndDeletedFalseOrderByLogDateDesc(user);
 
         return logs.stream()
                 .map(log -> DailyLogSummaryResponse.builder()
@@ -106,7 +114,9 @@ public class DailyLogService {
 
     @Transactional(readOnly = true)
     public DailyLogDetailResponse getDailyLogDetail(Long userId, Long logId) {
-        DailyLog log = dailyLogRepository.findByIdAndUserIdAndDeletedFalse(logId, userId)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+        DailyLog log = dailyLogRepository.findByIdAndUserAndDeletedFalse(logId, user)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 일기를 찾을 수 없습니다."));
 
@@ -123,23 +133,32 @@ public class DailyLogService {
     // 수정
     @Transactional
     public void update(Long userId, Long logId, DailyLogUpdateRequest request){
-        DailyLog log = dailyLogRepository.findByIdAndUserIdAndDeletedFalse(logId, userId)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+        DailyLog log = dailyLogRepository.findByIdAndUserAndDeletedFalse(logId, user)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일기를 찾을 수 없습니다."));
 
         log.setMood(request.getMood());
         log.setContent(request.getContent());
         log.setUpdatedAt(LocalDateTime.now());
 
-        if (request.isNeedAiReflection() && log.getContent() != null && !log.getContent().isBlank()) {
-            // 비동기로 공감문 생성 후 저장
-            generateAndSaveReflectionAsync(log.getId(), log.getContent());
+        if (request.isNeedAiReflection()){
+            if (log.getContent() != null && !log.getContent().isBlank()) {
+                // 비동기로 공감문 생성 후 저장
+                generateAndSaveReflectionAsync(log.getId(), log.getContent());
+            }
+        } else {
+            log.setAiReflection("");
         }
+
     }
 
     // 삭제
     @Transactional
     public void delete(Long userId, Long logId) {
-        DailyLog log = dailyLogRepository.findByIdAndUserIdAndDeletedFalse(logId, userId)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+        DailyLog log = dailyLogRepository.findByIdAndUserAndDeletedFalse(logId, user)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일기를 찾을 수 없습니다."));
 
         log.setDeleted(true);

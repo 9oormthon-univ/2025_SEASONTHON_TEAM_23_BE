@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DailyLogRepository extends JpaRepository<DailyLog, Long> {
-    long countByUserId(Long userId);
+    long countByUser(User user);
 
-    Optional<DailyLog> findByIdAndUserIdAndDeletedFalse(Long id, Long userId);
+    Optional<DailyLog> findByIdAndUserAndDeletedFalse(Long id, User user);
 
-    List<DailyLog> findByUserIdAndDeletedFalseOrderByLogDateDesc(Long userId);
+    List<DailyLog> findByUserAndDeletedFalseOrderByLogDateDesc(User user);
 
-    boolean existsByUserIdAndLogDateAndDeletedFalse(Long userId, LocalDate logDate); // 하루 한 개 쓰기
+    boolean existsByUserAndLogDateAndDeletedFalse(User user, LocalDate logDate); // 하루 한 개 쓰기
 }

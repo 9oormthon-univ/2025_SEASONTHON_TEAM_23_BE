@@ -12,5 +12,5 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
     List<Letter> findAllByIsPublicOrderByCreatedAtDesc(boolean isPublic);
     Optional<Letter> findById(Long id);
     List<Letter> findAllByUserId(Long Id);
-    long countByUserId(Long userId);
+    long countByUser(User user);
 }
