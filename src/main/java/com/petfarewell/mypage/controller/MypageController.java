@@ -30,7 +30,7 @@ public class MypageController {
         return ResponseEntity.ok(summary);
     }
 
-    @PatchMapping("/nickname")
+    @PutMapping("/nickname")
     @Operation(summary = "내 닉네임 수정", description = "마이페이지에서 현재 로그인한 사용자의 닉네임을 수정")
     public ResponseEntity<Void> updateMyNickname(
             @AuthenticationPrincipal CustomUserDetails userDetails,
