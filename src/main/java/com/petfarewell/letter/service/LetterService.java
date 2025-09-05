@@ -52,13 +52,15 @@ public class LetterService {
 
     @Transactional
     public List<Letter> findMyLetters(Long userId) {
-        return letterRepository.findAllByUserId(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        return letterRepository.findAllByUser(user);
     }
 
     @Transactional
-    public Letter findLetterById(Long id) {
-        return letterRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("편지를 찾을 수 없습니다. ID: " + id));
+    public Letter findLetter(Long letterId) {
+        return letterRepository.findById(letterId)
+                .orElseThrow(() -> new EntityNotFoundException("편지를 찾을 수 없습니다. ID: " + letterId));
     }
 
     @Transactional
@@ -84,7 +86,7 @@ public class LetterService {
 
     @Transactional
     public void deleteLetter(Long letterId, Long currentUserId) {
-        Letter letter = findLetterById(letterId);
+        Letter letter = findLetter(letterId);
 
         if(!letter.getUser().getId().equals(currentUserId)) {
             throw new SecurityException("편지를 삭제할 권한이 없습니다.");
