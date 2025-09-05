@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface LetterRepository extends JpaRepository<Letter, Long> {
     Letter save(Letter letter);
     List<Letter> findAllByIsPublicOrderByCreatedAtDesc(boolean isPublic);
-    Optional<Letter> findById(Long id);
-    List<Letter> findAllByUserId(Long Id);
+    Optional<Letter> findByUser(User user);
+    List<Letter> findAllByUser(User user);
     long countByUser(User user);
 }

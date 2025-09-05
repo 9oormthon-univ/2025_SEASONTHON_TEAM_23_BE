@@ -1,6 +1,8 @@
 package com.petfarewell.letter.controller;
 
+import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.security.CustomUserDetails;
+import com.petfarewell.auth.service.UserService;
 import com.petfarewell.letter.dto.request.LetterRequest;
 import com.petfarewell.letter.dto.response.LetterResponse;
 import com.petfarewell.letter.dto.response.TributeResponse;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class LetterController {
     private final LetterService letterService;
     private final TributeService tributeService;
+    private final UserService userService;
 
     @PostMapping
     @Operation(summary = "한마디 편지 작성", description = "한마디 편지를 DB에 저장")
@@ -68,7 +71,7 @@ public class LetterController {
     @GetMapping("/{letterId}")
     @Operation(summary = "단일 편지 상세 보기", description = "특정 id를 가진 단일 편지를 조회")
     public ResponseEntity<LetterResponse> getLetter(@PathVariable("letterId") Long letterId) {
-        Letter findLetter = letterService.findLetterById(letterId);
+        Letter findLetter = letterService.findLetter(letterId);
 
         LetterResponse response = LetterResponse.from(findLetter);
 
