@@ -13,16 +13,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-    private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final TributeService tributeService;
 
     @Transactional
     public NotificationResponse findAndResetUnreadTributes(Long userId) {
         User currentUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
-        Notification notification = notificationRepository.findByUser(currentUser)
-                .orElseGet(() -> notificationRepository.save(new Notification(currentUser)));
+        Notification notification = tributeService.findOrCreateNotificationForUser(currentUser);
 
         NotificationResponse response = NotificationResponse.from(notification);
 

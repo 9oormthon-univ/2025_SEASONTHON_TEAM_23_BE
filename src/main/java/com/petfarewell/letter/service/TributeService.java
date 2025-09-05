@@ -54,8 +54,8 @@ public class TributeService {
 
         return tribute;
     }
-
-    private Notification findOrCreateNotificationForUser(User user) {
+    @Transactional
+    public Notification findOrCreateNotificationForUser(User user) {
         Optional<Notification> notificationOptional = tributeNotificationRepository.findByUser(user);
 
         if (notificationOptional.isPresent()) {
