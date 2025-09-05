@@ -37,7 +37,16 @@ public class MypageController {
             @RequestBody @Valid NicknameUpdateRequest request) {
 
         mypageService.updateNickname(userDetails.getId(), request.getNickname());
+        return ResponseEntity.noContent().build();
+    }
 
+    @PostMapping("/nickname")
+    @Operation(summary = "로그인 직후 닉네임 받기", description = "로그인 직후 사용자로부터 닉네임 입력 받음")
+    public ResponseEntity<Void> getNickname(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid NicknameUpdateRequest request) {
+
+        mypageService.updateNickname(userDetails.getId(), request.getNickname());
         return ResponseEntity.noContent().build();
     }
 }
