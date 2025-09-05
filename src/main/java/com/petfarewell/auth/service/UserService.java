@@ -28,27 +28,6 @@ public class UserService {
 
         if (existingUserOpt.isPresent()) {
             User existingUser = existingUserOpt.get();
-            boolean updated = false;
-
-            if (userInfo.getKakaoAccount() != null && userInfo.getKakaoAccount().getProfile() != null) {
-                String newNickname = userInfo.getKakaoAccount().getProfile().getNickName();
-                String newProfileImage = userInfo.getKakaoAccount().getProfile().getProfileImageUrl();
-
-                if (newNickname != null && !newNickname.equals(existingUser.getNickname())) {
-                    existingUser.setNickname(newNickname);
-                    updated = true;
-                }
-
-                if (newProfileImage != null && !newProfileImage.equals(existingUser.getProfileImageUrl())) {
-                    existingUser.setProfileImageUrl(newProfileImage);
-                    updated = true;
-                }
-            }
-
-            if (updated) {
-                log.info("Updated user profile for kakaoId: {}", existingUser.getKakaoId());
-            }
-
             return existingUser;
         } else {
             User newUser = User.createFromKakao(
