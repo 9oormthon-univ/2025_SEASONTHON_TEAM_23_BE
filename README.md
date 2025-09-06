@@ -86,7 +86,7 @@ src
 │         │    ├── dto
 │         │    └── service
 │         │
-│         ├── HelloController
+│         ├
 │         └── PetfarewellApplication
 │
 └── resources
