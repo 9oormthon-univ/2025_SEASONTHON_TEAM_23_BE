@@ -101,16 +101,13 @@ public class DailyLogService {
                         .id(log.getId())
                         .logDate(log.getLogDate())
                         .topic(log.getTopic())
-                        .preview(buildPreview(log.getContent()))
+                        .preview(log.getContent())
                         .mood(log.getMood())
                         .build())
                 .toList();
     }
 
-    private String buildPreview(String content) {
-        if (content == null || content.isBlank()) return "";
-        return content.length() <= 10 ? content : content.substring(0, 10) + " 더보기";
-    }
+
 
     @Transactional(readOnly = true)
     public DailyLogDetailResponse getDailyLogDetail(Long userId, Long logId) {
