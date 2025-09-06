@@ -28,7 +28,7 @@ public class MypageService {
 
         long diaryCount = diaryRepository.countByUserAndDeletedFalse(user);
         long letterCount = letterRepository.countByUser(user);
-        long tributeCount = letterTributeRepository.getTotalTributeCountByUserId(user);
+        long tributeCount = letterTributeRepository.getTotalTributeCountByUser(user);
 
         return new UserActivitySummaryResponse(diaryCount, letterCount, tributeCount);
     }
