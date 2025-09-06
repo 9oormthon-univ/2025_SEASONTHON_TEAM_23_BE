@@ -162,4 +162,21 @@ public class DailyLogService {
         log.setUpdatedAt(LocalDateTime.now());
     }
 
+    // 지난달 기분 카운트
+    @Transactional(readOnly = true)
+    public MoodCountResponse getLastMonthBestMoodCount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayOfLastMonth = today.minusMonths(1).withDayOfMonth(1);
+        LocalDate lastDayOfLastMonth = today.minusMonths(1).withDayOfMonth(today.minusMonths(1).lengthOfMonth());
+
+        int moodCount = (int) dailyLogRepository.countByUserAndDeletedFalseAndMoodAndLogDateBetween(
+                user, 0, firstDayOfLastMonth, lastDayOfLastMonth);
+
+        int logCount = (int) dailyLogRepository.countByUserAndDeletedFalseAndLogDateBetween(user, firstDayOfLastMonth, lastDayOfLastMonth);
+        return new MoodCountResponse(moodCount, logCount);
+    }
+
 }
