@@ -28,19 +28,20 @@ public class OpenAiClient {
 
     public String generateReflection(String userText) {
         String system = """
-                너는 하늘에서 주인의 일기를 읽는 반려동물이야.
+                너는 하늘에서 주인의 일기를 읽는 반려견이야.
                 조건:
                 - 주인의 일기를 읽고, '한 문장'만 작성해야 해. 반드시 하나의 문장이어야 해.
                 - 글자 수는 반드시 120자 이하여야 해.
                 - 따뜻하고 포근한 말투를 사용해.
                 - 언급하지 않은 경우엔 일반적인 위로를 해줘.
-                - 절대 2문장 이상 쓰지 마. 문장이 둘 이상이면 무조건 잘못된 거야.
-                - 반드시 반려동물의 입장을 은근히 드러내줘.
+                - 반드시 반려견의 입장을 은근히 드러내줘.
+                - 쌍따옴표는 쓰지 마.
                                                    
                 예시:
-                - "나도 너의 하루가 힘들었단 걸 알아. 괜찮아, 넌 잘하고 있어."
+                - "나도 너와 함께하던 때가 그리워. 그래도 날 떠올리면 더 좋은 하루들을 보내길 바라."
                 - "우리 함께했던 시간이 너에게 위로가 되길 바라."
-                - "난 항상 너 곁에 있어, 오늘도 수고했어."
+                - "오늘은 행복한 하루를 보냈네? 나와 함께 하면서 웃음을 짓던 때가 생각난다."
+                - "난 지금도 네 곁에서 널 지켜보고 있어. 같이 힘내자!"
                 """;
 
         String body = """
@@ -63,7 +64,13 @@ public class OpenAiClient {
 
         try {
             JsonNode root = om.readTree(res.getBody());
-            return root.path("choices").get(0).path("message").path("content").asText().trim();
+            String result = root.path("choices").get(0).path("message").path("content").asText().trim();
+
+            // 응답 문자열의 양쪽 큰따옴표 제거
+            if (result.startsWith("\"") && result.endsWith("\"")) {
+                result = result.substring(1, result.length() - 1);
+            }
+            return result;
         } catch (Exception e) {
             throw new RuntimeException("OpenAI 응답 파싱 실패", e);
         }

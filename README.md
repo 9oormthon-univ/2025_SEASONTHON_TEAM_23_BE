@@ -20,4 +20,20 @@
   <li><strong>필요하다면 전문가에게 상담을 받아</strong> 회복을 위한 적절한 도움을 연결합니다.</li>
 </ol>
 
+<h2>기술 스택</h2>
+
+|  카테고리  |              스택              |
+|:------:|:----------------------------:|
+|   언어   |             JAVA             |
+| 프레임워크  |          SpringBoot          |
+|  ORM   |             JPA              |
+|   DB   |            MYSQL             |
+| 라이브러리  | Spring Security, Jwt, Lombok |
+| Deploy |  Docker, AWS(EC2, RDS, S3)   |
+| CI/CD  |        Github Actions        |
+
+
+
+
+
 <hr />
