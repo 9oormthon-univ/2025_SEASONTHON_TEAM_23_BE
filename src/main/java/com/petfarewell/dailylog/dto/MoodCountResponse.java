@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MoodCountResponse {
     private int bestMoodCount;
+    private int goodMoodCount;
     private int dailyCount;
 }
