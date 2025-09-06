@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DailyLogRepository extends JpaRepository<DailyLog, Long> {
-    long countByUser(User user);
+    long countByUserAndDeletedFalse(User user);
 
     Optional<DailyLog> findByIdAndUserAndDeletedFalse(Long id, User user);
 
