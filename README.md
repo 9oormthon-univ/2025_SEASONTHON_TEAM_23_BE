@@ -30,7 +30,7 @@
 |   DB   |            MYSQL             |
 | 라이브러리  | Spring Security, Jwt, Lombok |
 | Deploy |  Docker, AWS(EC2, RDS, S3)   |
-| CI/CD  |        Github actions        |
+| CI/CD  |        Github Actions        |
 
 
 
