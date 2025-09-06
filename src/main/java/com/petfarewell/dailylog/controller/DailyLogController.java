@@ -61,4 +61,11 @@ public class DailyLogController {
     public void deleteDailyLog(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("logId") Long logId) {
         service.delete(userDetails.getId(), logId);
     }
+
+    @Operation(summary = "기분 분석 API", description = "지난 달 총 일기 수와 mood 값이 0인 개수를 반환합니다.")
+    @GetMapping("/analyzeMood")
+    public ResponseEntity<MoodCountResponse> getLastMonthBestMoodCount(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        MoodCountResponse response = service.getLastMonthBestMoodCount(userDetails.getId());
+        return ResponseEntity.ok(response);
+    }
 }
