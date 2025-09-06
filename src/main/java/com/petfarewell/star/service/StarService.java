@@ -24,7 +24,7 @@ public class StarService {
 
         long diaryCount = diaryRepository.countByUserAndDeletedFalse(user);
         long letterCount = letterRepository.countByUser(user);
-        long tributeCount = letterTributeRepository.getTotalTributeCountByUserId(user);
+        long tributeCount = letterTributeRepository.getTotalTributeCountByUser(user);
 
         return new StarResponse(diaryCount + letterCount + tributeCount);
     }

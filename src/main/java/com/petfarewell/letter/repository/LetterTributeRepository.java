@@ -12,6 +12,6 @@ import java.util.List;
 public interface LetterTributeRepository extends JpaRepository<LetterTribute, Long> {
     boolean existsByUserAndLetter(User user, Letter letter);
     List<LetterTribute> findAllByLetterId(Long letterId);
-    @Query("SELECT SUM(l.tributeCount) FROM Letter l WHERE l.user = :user")
-    Long getTotalTributeCountByUserId(@Param("user") User user);
+    @Query("SELECT COALESCE (SUM(l.tributeCount), 0L) FROM Letter l WHERE l.user = :user")
+    long getTotalTributeCountByUser(@Param("user") User user);
 }
