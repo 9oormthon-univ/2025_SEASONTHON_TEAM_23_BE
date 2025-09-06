@@ -32,7 +32,68 @@
 | Deploy |  Docker, AWS(EC2, RDS, S3)   |
 | CI/CD  |        Github Actions        |
 
+<h2>프로젝트 구조</h2>
+<pre> 
+gradle
+ └── wrapper
+      └── gradle-wrapper
 
+
+src
+└── main
+├── java
+│    └── com.petfarewell
+│         ├── auth
+│         │    ├── controller
+│         │    ├── dto
+│         │    ├── entity
+│         │    ├── repository
+│         │    ├── security
+│         │    └── service
+│         │
+│         ├── config
+│         │    ├── AsyncConfig
+│         │    ├── S3Config
+│         │    ├── SecurityConfig
+│         │    └── SwaggerConfig
+│         │
+│         ├── dailylog
+│         │    ├── ai
+│         │    ├── controller
+│         │    ├── dto
+│         │    ├── entity
+│         │    ├── repository
+│         │    └── service
+│         │
+│         ├── global
+│         │    ├── dto
+│         │    └── exception
+│         │
+│         ├── letter
+│         │    ├── controller
+│         │    ├── dto
+│         │    ├── entity
+│         │    ├── repository
+│         │    └── service
+│         │
+│         ├── mypage
+│         │    ├── controller
+│         │    ├── dto
+│         │    └── service
+│         │
+│         ├── star
+│         │    ├── controller
+│         │    ├── dto
+│         │    └── service
+│         │
+│         ├── HelloController
+│         └── PetfarewellApplication
+│
+└── resources
+├── application.yml
+├── application-dev.yml
+└── application-prod.yml
+ </pre>
 
 
 
