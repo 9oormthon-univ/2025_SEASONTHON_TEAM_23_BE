@@ -172,11 +172,14 @@ public class DailyLogService {
         LocalDate firstDayOfLastMonth = today.minusMonths(1).withDayOfMonth(1);
         LocalDate lastDayOfLastMonth = today.minusMonths(1).withDayOfMonth(today.minusMonths(1).lengthOfMonth());
 
-        int moodCount = (int) dailyLogRepository.countByUserAndDeletedFalseAndMoodAndLogDateBetween(
+        int bestMoodCount = (int) dailyLogRepository.countByUserAndDeletedFalseAndMoodAndLogDateBetween(
                 user, 0, firstDayOfLastMonth, lastDayOfLastMonth);
 
+        int goodMoodCont = (int) dailyLogRepository.countByUserAndDeletedFalseAndMoodAndLogDateBetween(
+                user, 1, firstDayOfLastMonth, lastDayOfLastMonth);
+
         int logCount = (int) dailyLogRepository.countByUserAndDeletedFalseAndLogDateBetween(user, firstDayOfLastMonth, lastDayOfLastMonth);
-        return new MoodCountResponse(moodCount, logCount);
+        return new MoodCountResponse(bestMoodCount, goodMoodCont, logCount);
     }
 
 }
