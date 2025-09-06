@@ -26,7 +26,7 @@ public class MypageService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        long diaryCount = diaryRepository.countByUser(user);
+        long diaryCount = diaryRepository.countByUserAndDeletedFalse(user);
         long letterCount = letterRepository.countByUser(user);
         long tributeCount = letterTributeRepository.getTotalTributeCountByUserId(user);
 
