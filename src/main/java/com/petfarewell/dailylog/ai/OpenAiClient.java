@@ -71,27 +71,30 @@ public class OpenAiClient {
 
     public String generateTopic() {
         String systemPrompt = """
-            너는 반려동물 상실을 겪은 사람들에게 감정 정리를 돕는 글쓰기 가이드 도우미야.
-            오늘 하루를 돌아볼 수 있는 일기 주제를 1개 생성해줘.
-            조건:
-            - 한국어로
-            - 20자 이내
-            - 질문형 또는 설명형 문장
-            - 위로와 성찰을 유도하는 부드러운 문장
-            """;
+        너는 반려동물 상실을 겪은 사람들에게 감정 정리를 돕는 글쓰기 가이드 도우미야.
+        오늘 하루를 돌아볼 수 있는 일기 주제 문장 하나를 생성해줘.
+        조건:
+        - 한국어로
+        - 20자 이내
+        - 질문형 또는 설명형 문장
+        - 위로와 성찰을 유도하는 부드럽고 따뜻한 문장
+        - 무조건 '반려동물'이라는 키워드를 포함해서 생성해줘
+        - 쌍따옴표는 쓰지 마.
+        예시: "오늘도 반려동물은 하늘에서 잘 지내고 있을 거에요. 반려 동물에게 당신의 오늘 이야기를 들려주세요.", "반려동물과 함께 보낸 소중한 순간을 되새겨보며 감사의 마음을 표현해보세요", "지금 떠오르는 반려동물과의 추억이 있을까요?", "반려동물과 진심으로 행복했던 날에 대한 이야기를 들려주세요."
+        """;
 
-        String userPrompt = "오늘의 일기 주제를 하나 생성해줘.";
+        String userPrompt = "데일리 일기 주제를 하나 생성해줘.";
 
         String body = """
-            {
-              "model": "%s",
-              "temperature": 0.6,
-              "messages": [
-                {"role":"system","content":%s},
-                {"role":"user","content":%s}
-              ]
-            }
-            """.formatted(MODEL, json(systemPrompt), json(userPrompt));
+        {
+          "model": "%s",
+          "temperature": 0.6,
+          "messages": [
+            {"role":"system","content":%s},
+            {"role":"user","content":%s}
+          ]
+        }
+        """.formatted(MODEL, json(systemPrompt), json(userPrompt));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -103,11 +106,19 @@ public class OpenAiClient {
 
         try {
             JsonNode root = om.readTree(res.getBody());
-            return root.path("choices").get(0).path("message").path("content").asText().trim();
+            String result = root.path("choices").get(0).path("message").path("content").asText().trim();
+
+            // 응답 문자열의 양쪽 큰따옴표 제거
+            if (result.startsWith("\"") && result.endsWith("\"")) {
+                result = result.substring(1, result.length() - 1);
+            }
+
+            return result;
         } catch (Exception e) {
             throw new RuntimeException("OpenAI 응답 파싱 실패", e);
         }
     }
+
 
     private String json(String s) {
         try { return om.writeValueAsString(s); }
