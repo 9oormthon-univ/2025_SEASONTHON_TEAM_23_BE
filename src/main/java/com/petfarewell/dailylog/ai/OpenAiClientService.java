@@ -2,6 +2,11 @@ package com.petfarewell.dailylog.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.petfarewell.auth.entity.User;
+import com.petfarewell.auth.repository.UserRepository;
+import com.petfarewell.pet.entity.Pet;
+import com.petfarewell.pet.repository.PetRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -10,13 +15,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class OpenAiClient {
+public class OpenAiClientService {
 
+    private final UserRepository userRepository;
+    private final PetRepository petRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper om = new ObjectMapper();
 
@@ -26,34 +33,45 @@ public class OpenAiClient {
     private static final String URL = "https://api.openai.com/v1/chat/completions";
     private static final String MODEL = "gpt-3.5-turbo";
 
-    public String generateReflection(String userText) {
+    public String generateReflection(Long userId, String userText) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
+
+        Pet pet = petRepository.findByUserAndIsActiveTrue(user)
+                .orElseThrow(() -> new EntityNotFoundException("활성화된 반려동물이 존재하지 않습니다."));
+
+
         String system = """
-                너는 하늘에서 주인의 일기를 읽는 반려견이야.
-                조건:
-                - 주인의 일기를 읽고, '한 문장'만 작성해야 해. 반드시 하나의 문장이어야 해.
-                - 글자 수는 반드시 120자 이하여야 해.
-                - 따뜻하고 포근한 말투를 사용해.
-                - 언급하지 않은 경우엔 일반적인 위로를 해줘.
-                - 반드시 반려견의 입장을 은근히 드러내줘.
-                - 쌍따옴표는 쓰지 마.
-                                                   
-                예시:
-                - "나도 너와 함께하던 때가 그리워. 그래도 날 떠올리면 더 좋은 하루들을 보내길 바라."
-                - "우리 함께했던 시간이 너에게 위로가 되길 바라."
-                - "오늘은 행복한 하루를 보냈네? 나와 함께 하면서 웃음을 짓던 때가 생각난다."
-                - "난 지금도 네 곁에서 널 지켜보고 있어. 같이 힘내자!"
-                """;
+        너는 하늘에서 주인의 일기를 읽고 공감문을 건네는 이미 죽은 반려동물이야. 하지만 주인의 곁에 계속 있는 것 같은 느낌을 주기 위해서 아래의 조건을 준수해줬으면 좋겠어.
+        
+        
+        반드시 다음 조건을 지켜:
+        - 반드시 너의 이름 '%s'을 문장에 언급해줘 (예: '오랜만이야! 나는 복실이야.')
+        - 반려동물의 성격을 문장의 어투나 분위기에 자연스럽게 반영해줘. 성격은 '%s'야. (예: 활발한 성격이면 밝고 유쾌하게)
+        - 종에 따라 의성어를 자연스럽게 한 번 넣어줘. 종은 '%s'야, (예: 강아지는 '멍멍', 고양이는 '냐옹', 햄스터는 '찍찍' 등)
+        - 문장은 반드시 하나만 작성해줘 (한 문장, 120자 이내)
+        - 반드시 반려동물의 시점으로 써야 하고, 쌍따옴표(" ")는 쓰지 마.
+        - 예시 문장: 오랜만이야! 나는 복실이다 멍! 일기를 보니 잘 지내는 것 같아서 나도 기분이 좋아. 힘든 일이 있을 땐 하늘에 있을 날 떠올리면서 기분 좋은 하루를 보냈으면 좋겠어!
+        """.formatted(pet.getName(), pet.getBreed(), pet.getPersonality());
+
+
+        String prompt = """
+        아래는 주인이 작성한 일기야:
+        "%s"
+        이 일기를 읽은 반려동물로서 주인에게 위로의 말을 한 문장으로 건네줘.
+        """.formatted(userText);
+
 
         String body = """
-                {
-                  "model": "%s",
-                  "temperature": 0.2,
-                  "messages": [
-                    {"role":"system","content":%s},
-                    {"role":"user","content":%s}
-                  ]
-                }
-                """.formatted(MODEL, json(system), json(userText));
+        {
+        "model": "%s",
+        "temperature": 0.4,
+        "messages": [
+        {"role":"system","content":%s},
+        {"role":"user","content":%s}
+        ]
+        }
+        """.formatted(MODEL, json(system), json(prompt));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
