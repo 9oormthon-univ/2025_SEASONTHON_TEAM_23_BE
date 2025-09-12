@@ -44,9 +44,7 @@ public class TributeService {
                 .build();
         letterTributeRepository.save(tribute);
 
-        User recipient = letter.getUser();
-
-        Notification notification = findOrCreateNotificationForUser(recipient);
+        Notification notification = findOrCreateNotificationForLetter(letter);
 
         notification.incrementTributeCount();
 
@@ -55,16 +53,16 @@ public class TributeService {
         return tribute;
     }
     @Transactional
-    public Notification findOrCreateNotificationForUser(User user) {
-        Optional<Notification> notificationOptional = tributeNotificationRepository.findByUser(user);
+    public Notification findOrCreateNotificationForLetter(Letter letter) {
+        Optional<Notification> notificationOptional = tributeNotificationRepository.findByLetter(letter);
 
         if (notificationOptional.isPresent()) {
             return notificationOptional.get();
         } else {
             try {
-                return tributeNotificationRepository.saveAndFlush(new Notification(user));
+                return tributeNotificationRepository.saveAndFlush(new Notification(letter.getUser(), letter));
             } catch (DataIntegrityViolationException e) {
-                return tributeNotificationRepository.findByUser(user)
+                return tributeNotificationRepository.findByLetter(letter)
                         .orElseThrow(() -> new RuntimeException("경쟁 상태 후 Notification 조회 실패", e));
             }
         }
