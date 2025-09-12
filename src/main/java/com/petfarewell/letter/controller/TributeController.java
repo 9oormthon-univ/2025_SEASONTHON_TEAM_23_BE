@@ -34,11 +34,11 @@ public class TributeController {
     }
 
     @GetMapping("/notifications/recent")
-    @Operation(summary = "헌화 알림", description = "프론트에서 특정 시간마다 이 API를 호출하여 그 시간까지 쌓인 헌화를 조회")
-    public ResponseEntity<NotificationResponse> getRecentTributeNotifications(
+    @Operation(summary = "헌화 알림 조회", description = "프론트에서 특정 시간마다 이 API를 호출하여 그 시간까지 쌓인 헌화를 조회")
+    public ResponseEntity<List<NotificationResponse>> getRecentTributeNotifications(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        NotificationResponse response = notificationService.findAndResetUnreadTributes(userDetails.getId());
+        List<NotificationResponse> response = notificationService.findAndResetUnreadTributes(userDetails.getId());
 
         return ResponseEntity.ok(response);
     }

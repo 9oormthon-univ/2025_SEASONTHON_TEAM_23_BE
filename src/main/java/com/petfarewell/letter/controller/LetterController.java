@@ -69,7 +69,7 @@ public class LetterController {
     }
 
     @GetMapping("/{letterId}")
-    @Operation(summary = "단일 편지 상세 보기", description = "특정 id를 가진 단일 편지를 조회")
+    @Operation(summary = "단일 편지 상세 조회", description = "특정 id를 가진 단일 편지를 조회")
     public ResponseEntity<LetterResponse> getLetter(@PathVariable("letterId") Long letterId) {
         Letter findLetter = letterService.findLetter(letterId);
 

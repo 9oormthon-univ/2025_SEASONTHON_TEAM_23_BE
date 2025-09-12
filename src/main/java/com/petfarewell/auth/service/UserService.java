@@ -41,7 +41,6 @@ public class UserService {
             log.info("Created new user with kakaoId: {}", newUser.getKakaoId());
 
             User user = userRepository.save(newUser);
-            tributeNotificationRepositoy.save(new Notification(newUser));
 
             return user;
         }

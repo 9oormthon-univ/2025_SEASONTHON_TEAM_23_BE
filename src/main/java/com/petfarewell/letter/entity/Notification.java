@@ -14,9 +14,13 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "letter_id", unique = true)
+    private Letter letter;
 
     @Column(nullable = false)
     private Long unreadTributeCount;
@@ -29,8 +33,9 @@ public class Notification {
         this.unreadTributeCount = 0L;
     }
 
-    public Notification(User user) {
+    public Notification(User user, Letter letter) {
         this.user = user;
+        this.letter = letter;
         this.unreadTributeCount = 0L;
     }
 }
