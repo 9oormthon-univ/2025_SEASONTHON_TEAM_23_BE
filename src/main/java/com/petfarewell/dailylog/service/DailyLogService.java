@@ -3,7 +3,7 @@ package com.petfarewell.dailylog.service;
 
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
-import com.petfarewell.dailylog.ai.OpenAiClient;
+import com.petfarewell.dailylog.ai.OpenAiClientService;
 import com.petfarewell.dailylog.dto.*;
 import com.petfarewell.dailylog.entity.DailyLog;
 import com.petfarewell.dailylog.entity.DailyTopic;
@@ -28,7 +28,7 @@ public class DailyLogService {
 
     private final DailyLogRepository dailyLogRepository;
     private final DailyTopicRepository dailyTopicRepository;
-    private final OpenAiClient openAiClient;
+    private final OpenAiClientService openAiClientService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -64,7 +64,7 @@ public class DailyLogService {
     @Async
     @Transactional
     public void generateAndSaveReflectionAsync(Long logId, Long userId, String content) {
-        String reflection = openAiClient.generateReflection(userId, content);
+        String reflection = openAiClientService.generateReflection(userId, content);
         dailyLogRepository.findById(logId).ifPresent(l -> {
             l.setAiReflection(reflection);
         });
@@ -79,7 +79,7 @@ public class DailyLogService {
                         .date(d.getDate())
                         .build())
                 .orElseGet(() -> {
-                    String topic = openAiClient.generateTopic();
+                    String topic = openAiClientService.generateTopic();
                     DailyTopic saved = dailyTopicRepository.save(
                             DailyTopic.builder().topic(topic).date(today).build()
                     );
