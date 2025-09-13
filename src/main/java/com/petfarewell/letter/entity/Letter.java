@@ -47,6 +47,9 @@ public class Letter {
     @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LetterTribute> tributes = new ArrayList<>();
 
+    @OneToOne(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Notification notifications = new Notification();
+
     @Builder
     public Letter(User user, String content, String photoUrl, boolean isPublic, int tributedCount) {
         this.user = user;
