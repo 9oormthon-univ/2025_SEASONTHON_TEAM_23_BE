@@ -54,7 +54,7 @@ public class LetterService {
     public List<Letter> findMyLetters(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-        return letterRepository.findAllByUser(user);
+        return letterRepository.findAllByUserOrderByCreatedAtDesc(user);
     }
 
     @Transactional
