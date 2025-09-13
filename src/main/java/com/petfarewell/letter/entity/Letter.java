@@ -48,11 +48,12 @@ public class Letter {
     private List<LetterTribute> tributes = new ArrayList<>();
 
     @OneToOne(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Notification notifications = new Notification();
+    private Notification notification;
 
     @Builder
-    public Letter(User user, String content, String photoUrl, boolean isPublic, int tributedCount) {
+    public Letter(User user, Notification notification, String content, String photoUrl, boolean isPublic, int tributedCount) {
         this.user = user;
+        this.notification = notification;
         this.content = content;
         this.photoUrl = photoUrl;
         this.isPublic = isPublic;

@@ -9,6 +9,7 @@ import com.petfarewell.letter.dto.response.TributeResponse;
 import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.LetterTribute;
 import com.petfarewell.letter.service.LetterService;
+import com.petfarewell.letter.service.NotificationService;
 import com.petfarewell.letter.service.TributeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,7 @@ public class LetterController {
     private final LetterService letterService;
     private final TributeService tributeService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     @PostMapping
     @Operation(summary = "한마디 편지 작성", description = "한마디 편지를 DB에 저장")
@@ -38,8 +40,11 @@ public class LetterController {
             @ModelAttribute LetterRequest request,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         Letter savedLetter = letterService.saveLetter(userDetails.getId(), request, imageFile);
+        User user = userService.getUserById(userDetails.getId());
 
         LetterResponse response = LetterResponse.from(savedLetter);
+
+        notificationService.saveNotification(user, savedLetter);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

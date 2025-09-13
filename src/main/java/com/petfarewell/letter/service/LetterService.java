@@ -4,8 +4,10 @@ import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
 import com.petfarewell.letter.dto.request.LetterRequest;
 import com.petfarewell.letter.entity.Letter;
+import com.petfarewell.letter.entity.Notification;
 import com.petfarewell.letter.entity.upload.FileUploadService;
 import com.petfarewell.letter.repository.LetterRepository;
+import com.petfarewell.letter.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class LetterService {
     private final LetterRepository letterRepository;
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public Letter saveLetter(Long userId, LetterRequest request, MultipartFile imageFile) {

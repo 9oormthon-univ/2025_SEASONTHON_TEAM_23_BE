@@ -22,7 +22,7 @@ public class Notification {
     @JoinColumn(name = "letter_id", unique = true)
     private Letter letter;
 
-    @Column(nullable = false)
+    @Column
     private Long unreadTributeCount;
 
     public void incrementTributeCount() {

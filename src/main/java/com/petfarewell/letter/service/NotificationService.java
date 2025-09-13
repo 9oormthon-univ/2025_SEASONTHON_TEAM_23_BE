@@ -3,6 +3,7 @@ package com.petfarewell.letter.service;
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
 import com.petfarewell.letter.dto.response.NotificationResponse;
+import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.Notification;
 import com.petfarewell.letter.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +20,11 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final TributeService tributeService;
     private final NotificationRepository notificationRepository;
+
+    @Transactional
+    public void saveNotification(User user, Letter letter) {
+        notificationRepository.save(new Notification(user, letter));
+    }
 
     @Transactional
     public List<NotificationResponse> findAndResetUnreadTributes(Long userId) {
