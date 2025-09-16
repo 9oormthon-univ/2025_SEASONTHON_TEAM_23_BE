@@ -3,6 +3,7 @@ package com.petfarewell.pet.controller;
 import com.petfarewell.auth.security.CustomUserDetails;
 import com.petfarewell.pet.dto.PetRequest;
 import com.petfarewell.pet.dto.PetResponse;
+import com.petfarewell.pet.entity.Pet;
 import com.petfarewell.pet.service.PetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,5 +42,28 @@ public class PetController {
                                               @PathVariable("petId") Long petId){
         petService.setActivePet(userDetails.getId(), petId);
         return ResponseEntity.ok("활성화된 반려동물이 변경되었습니다.");
+    }
+
+    @Operation(summary = "반려동물 삭제", description = "등록된 반려동물을 삭제합니다.")
+    @DeleteMapping("/delete/{petId}")
+    public ResponseEntity<String> deletePet(@PathVariable("petId") Long petId) {
+        petService.deletePet(petId);
+        return ResponseEntity.ok("반려동물이 삭제되었습니다.");
+    }
+
+    @Operation(summary = "반려동물 수정", description = "등록된 반려동물의 정보를 수정합니다.")
+    @PutMapping("/update/{petId}")
+    public ResponseEntity<PetResponse> putPet(@PathVariable("petId") Long petId,
+                                              @RequestBody PetRequest request) {
+        Pet updatedPet = petService.updatePet(petId, request);
+
+        PetResponse response = PetResponse.builder()
+                .id(updatedPet.getId())
+                .name(updatedPet.getName())
+                .breed(updatedPet.getBreed())
+                .personality(updatedPet.getPersonality())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }
