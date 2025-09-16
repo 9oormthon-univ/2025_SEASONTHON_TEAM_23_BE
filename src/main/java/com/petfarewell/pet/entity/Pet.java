@@ -33,4 +33,10 @@ public class Pet {
 
     @Column(nullable = false)
     private boolean isActive;
+
+    public void update(String name, String breed, String personality) {
+        this.name = name;
+        this.breed = breed;
+        this.personality = personality;
+    }
 }
