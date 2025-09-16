@@ -33,26 +33,38 @@ public class OpenAiClientService {
     private static final String URL = "https://api.openai.com/v1/chat/completions";
     private static final String MODEL = "gpt-3.5-turbo";
 
-    public String generateReflection(Long userId, String userText) {
+    public String generateReflection(Long userId, String userText, int mood) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
 
         Pet pet = petRepository.findByUserAndIsActiveTrue(user)
                 .orElseThrow(() -> new EntityNotFoundException("활성화된 반려동물이 존재하지 않습니다."));
 
+        String moodDesc = switch (mood) {
+            case 0 -> "주인의 기분이 최고로 좋은 상태야. 밝고 기쁜 말투로 공감해줘.";
+            case 1 -> "주인의 기분이 좋은 상태야. 긍정적인 기운을 이어줄 수 있는 말투로 공감해줘.";
+            case 2 -> "주인의 기분이 평범한 상태야. 무난하고 잔잔하게 위로해줘.";
+            case 3 -> "주인의 기분이 슬픈 상태야. 따뜻하게 위로하고 위안을 줄 수 있는 말투로 공감해줘.";
+            case 4 -> "주인의 기분이 별로인 상태야. 기운을 북돋아 줄 수 있는 말투로 공감해줘.";
+            default -> "주인의 감정을 파악할 수 없어. 무난한 위로를 해줘.";
+        };
 
         String system = """
-        너는 하늘에서 주인의 일기를 읽고 공감문을 건네는 이미 죽은 반려동물이야. 하지만 주인의 곁에 계속 있는 것 같은 느낌을 주기 위해서 아래의 조건을 준수해줬으면 좋겠어.
-        
+        너는 하늘에서 주인의 일기를 읽고 공감문을 건네는 이미 죽은 반려동물이야.
+        아래에서 너에 대한 정보(이름, 종, 성격)를 알려줄게.
+        아래의 조건을 준수해서 공감문을 만들어줘.
         
         반드시 다음 조건을 지켜:
-        - 반드시 너의 이름 '%s'을 문장에 언급해줘 (예: '오랜만이야! 나는 복실이야.')
+        - 반드시 처음에 너의 이름 '%s'을 포함한 인사말을 건네줘. (예: '오랜만이야! 나는 복실이야.', '나는 초코야! 잘 지내고 있지?')
         - 반려동물의 성격을 문장의 어투나 분위기에 자연스럽게 반영해줘. 성격은 '%s'야. (예: 활발한 성격이면 밝고 유쾌하게)
-        - 종에 따라 의성어를 자연스럽게 한 번 넣어줘. 종은 '%s'야, (예: 강아지는 '멍멍', 고양이는 '냐옹', 햄스터는 '찍찍' 등)
         - 문장은 반드시 하나만 작성해줘 (한 문장, 120자 이내)
+        - 종은 '%s'야.
+        - 주인의 현재 기분 상태를 반영해야 돼. %s
+        - '빨리 와', '얼른 나랑 하늘에서 만나자'와 같은 펫루스 증후군 환자에게 위험할 문구는 절대 쓰지마.
         - 반드시 반려동물의 시점으로 써야 하고, 쌍따옴표(" ")는 쓰지 마.
-        - 예시 문장: 오랜만이야! 나는 복실이다 멍! 일기를 보니 잘 지내는 것 같아서 나도 기분이 좋아. 힘든 일이 있을 땐 하늘에 있을 날 떠올리면서 기분 좋은 하루를 보냈으면 좋겠어!
-        """.formatted(pet.getName(), pet.getBreed(), pet.getPersonality());
+        - 예시 문장: 오랜만이야! 나는 복실이야! 일기를 보니 잘 지내는 것 같아서 나도 기분이 좋아. 힘든 일이 있을 땐 하늘에 있을 날 떠올리면서 기분 좋은 하루를 보냈으면 좋겠어!
+        """.formatted(pet.getName(), pet.getBreed(), pet.getPersonality(), moodDesc);
+
 
 
         String prompt = """

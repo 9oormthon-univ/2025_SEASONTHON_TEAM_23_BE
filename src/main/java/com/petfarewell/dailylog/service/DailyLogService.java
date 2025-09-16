@@ -54,7 +54,7 @@ public class DailyLogService {
 
         if (request.isNeedAiReflection() && log.getContent() != null && !log.getContent().isBlank()) {
             // 비동기로 공감문 생성 후 저장
-            generateAndSaveReflectionAsync(log.getId(), userId,log.getContent());
+            generateAndSaveReflectionAsync(log.getId(), userId,log.getContent(), log.getMood());
         }
         return DailyLogResponse.builder()
                 .id(savedLog.getId())
@@ -63,8 +63,8 @@ public class DailyLogService {
 
     @Async
     @Transactional
-    public void generateAndSaveReflectionAsync(Long logId, Long userId, String content) {
-        String reflection = openAiClientService.generateReflection(userId, content);
+    public void generateAndSaveReflectionAsync(Long logId, Long userId, String content, int mood) {
+        String reflection = openAiClientService.generateReflection(userId, content, mood);
         dailyLogRepository.findById(logId).ifPresent(l -> {
             l.setAiReflection(reflection);
         });
@@ -142,7 +142,7 @@ public class DailyLogService {
         if (request.isNeedAiReflection()){
             if (log.getContent() != null && !log.getContent().isBlank()) {
                 // 비동기로 공감문 생성 후 저장
-                generateAndSaveReflectionAsync(log.getId(), userId, log.getContent());
+                generateAndSaveReflectionAsync(log.getId(), userId, log.getContent(), log.getMood());
             }
         } else {
             log.setAiReflection("");
