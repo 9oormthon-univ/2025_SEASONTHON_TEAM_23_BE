@@ -2,8 +2,8 @@ package com.petfarewell.auth.service;
 
 import java.util.Optional;
 
-import com.petfarewell.letter.entity.Notification;
-import com.petfarewell.letter.repository.NotificationRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +13,16 @@ import com.petfarewell.auth.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
 
+    @Value("${kakao.admin-key}")
+    private String kakaoAdminKey;
     private final UserRepository userRepository;
-    private final NotificationRepository tributeNotificationRepositoy;
 
     @Transactional
     public User registerOrUpdateKakaoUser(KakaoUserInfoResponse userInfo) {
@@ -65,6 +67,29 @@ public class UserService {
     public void logout(User user) {
         user.setRefreshToken(null);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = getUserById(userId);
+
+        unlinkKakaoAccount(user.getKakaoId());
+        userRepository.delete(user);
+    }
+
+    private void unlinkKakaoAccount(Long kakaoId) {
+        String url = "https://kapi.kakao.com/v1/user/unlink";
+        String body = "target_id_type=user_id&target_id=" + kakaoId;
+
+        WebClient.create(url).post()
+                .header(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoAdminKey)
+                .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnSuccess(response -> log.info("Kakao unlink success for kakaoId={}: {}", kakaoId, response))
+                .doOnError(error -> log.error("Kakao unlink failed for kakaoId={}: {}", kakaoId, error.getMessage()))
+                .block();
     }
 }
 

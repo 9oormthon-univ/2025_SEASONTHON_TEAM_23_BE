@@ -107,6 +107,20 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/me")
+    @Operation(summary = "회원 탈퇴", description = "현재 로그인한 사용자의 계정을 삭제하고 모든 관련 데이터를 제거")
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        userService.deleteUser(userDetails.getId());
+
+        log.info("User with ID {} has been deleted.", userDetails.getId());
+
+        return ResponseEntity.noContent().build();
+    }
+
+
     @PostMapping("/refresh")
     @Operation(summary = "액세스 토큰 갱신", description = "리프레시 토큰으로 새로운 액세스 토큰을 발급")
     @ApiResponses({
