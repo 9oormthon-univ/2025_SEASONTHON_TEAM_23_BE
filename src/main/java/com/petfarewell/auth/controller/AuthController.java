@@ -1,24 +1,13 @@
 package com.petfarewell.auth.controller;
 
-import java.util.*;
-
-import com.petfarewell.auth.dto.ErrorResponse;
-import com.petfarewell.auth.dto.response.UserResponse;
-import com.petfarewell.auth.security.CustomUserDetails;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
 import com.petfarewell.auth.dto.request.KakaoAuthRequest;
 import com.petfarewell.auth.dto.request.RefreshTokenRequest;
 import com.petfarewell.auth.dto.response.AuthTokensResponse;
-import com.petfarewell.auth.entity.User;
-import com.petfarewell.auth.security.JwtTokenProvider;
-import com.petfarewell.auth.service.KakaoService;
-import com.petfarewell.auth.service.UserService;
-
+import com.petfarewell.auth.dto.response.MessageResponse;
+import com.petfarewell.auth.dto.response.NewAccessTokenResponse;
+import com.petfarewell.auth.dto.response.UserResponse;
+import com.petfarewell.auth.security.CustomUserDetails;
+import com.petfarewell.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,156 +27,51 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthController {
 
-    private final KakaoService kakaoService;
-    private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
     @PostMapping("/kakao")
-    @Transactional
     @Operation(summary = "카카오 로그인", description = "인가 코드 또는 카카오 액세스 토큰으로 로그인/회원가입을 수행하고 JWT를 발급")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = AuthTokensResponse.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "401", description = "권한 없음", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = AuthTokensResponse.class)))
     })
-    public ResponseEntity<?> kakaoLoginFromMobile(@RequestBody KakaoAuthRequest request) {
-        if (request == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Request body is required"));
-        }
-
-        String code = request.getCode();
-        String kakaoAccessToken = request.getKakaoAccessToken();
-
-        if ((code == null || code.isBlank()) && (kakaoAccessToken == null || kakaoAccessToken.isBlank())) {
-            return ResponseEntity.badRequest().body(Map.of("message", "code 또는 kakaoAccessToken 중 하나는 필수입니다."));
-        }
-
-        try {
-            if (kakaoAccessToken == null || kakaoAccessToken.isBlank()) {
-                kakaoAccessToken = kakaoService.getAccessTokenFromKakao(code);
-            }
-
-            var userInfo = kakaoService.getUserInfo(kakaoAccessToken);
-
-            User user = userService.registerOrUpdateKakaoUser(userInfo);
-
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("nickname", user.getNickname());
-
-            String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(user.getId()), claims);
-            String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(user.getId()), claims);
-
-            userService.updateRefreshToken(user, refreshToken);
-
-            AuthTokensResponse.UserSummary summary = new AuthTokensResponse.UserSummary(
-                    user.getId(), user.getNickname(), user.getProfileImageUrl());
-            AuthTokensResponse response = new AuthTokensResponse(accessToken, refreshToken, summary);
-
-            log.info("Successfully authenticated user with kakaoId: {}", user.getKakaoId());
-            return ResponseEntity.ok(response);
-
-        } catch (RuntimeException e) {
-            log.error("Kakao authentication failed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
-        } catch (Exception e) {
-            log.error("Unexpected error during kakao authentication: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "서버 오류가 발생했습니다."));
-        }
+    public ResponseEntity<AuthTokensResponse> kakaoLoginFromMobile(@RequestBody KakaoAuthRequest request) {
+        AuthTokensResponse response = authService.kakaoLogin(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
     @Operation(summary = "현재 사용자 정보 조회", description = "JWT 토큰으로 현재 로그인한 사용자 정보를 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserResponse.class)))
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증되지 않은 사용자입니다."));
-        }
-
-        UserResponse response = new UserResponse(userDetails.getId(),userDetails.getNickname(),userDetails.getProfileImageUrl());
-
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        UserResponse response = new UserResponse(
+                userDetails.getId(),
+                userDetails.getNickname(),
+                userDetails.getProfileImageUrl()
+        );
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/me")
     @Operation(summary = "회원 탈퇴", description = "현재 로그인한 사용자의 계정을 삭제하고 모든 관련 데이터를 제거")
+    @ApiResponse(responseCode = "204", description = "탈퇴 성공")
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        userService.deleteUser(userDetails.getId());
-
-        log.info("User with ID {} has been deleted.", userDetails.getId());
-
+        authService.deleteUser(userDetails.getId());
         return ResponseEntity.noContent().build();
     }
 
-
     @PostMapping("/refresh")
     @Operation(summary = "액세스 토큰 갱신", description = "리프레시 토큰으로 새로운 액세스 토큰을 발급")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "갱신 성공", content = @Content(schema = @Schema(example = "{\"accessToken\":\"newAccessToken\"}"))),
-            @ApiResponse(responseCode = "401", description = "리프레시 토큰 유효하지 않음", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request) {
-        if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "리프레시 토큰이 필요합니다."));
-        }
-
-        try {
-            var claims = jwtTokenProvider.parseClaims(request.getRefreshToken());
-            String userId = claims.getSubject();
-            User user = userService.getUserById(Long.parseLong(userId));
-
-            if (!userService.validateRefreshToken(user, request.getRefreshToken())) {
-                throw new RuntimeException("Invalid refresh token");
-            }
-
-            Map<String, Object> newClaims = new HashMap<>(claims);
-            newClaims.remove("exp");
-            newClaims.remove("iat");
-
-            String newAccessToken = jwtTokenProvider.createAccessToken(userId, newClaims);
-            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
-        }
+    @ApiResponse(responseCode = "200", description = "갱신 성공", content = @Content(schema = @Schema(implementation = NewAccessTokenResponse.class)))
+    public ResponseEntity<NewAccessTokenResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        String newAccessToken = authService.refreshAccessToken(request.getRefreshToken());
+        return ResponseEntity.ok(new NewAccessTokenResponse(newAccessToken));
     }
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "사용자 로그아웃 시 리프레시 토큰을 무효화")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(example = "{\"message\":\"로그아웃되었습니다.\"}"))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "401", description = "권한 없음", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<?> logout(@RequestBody RefreshTokenRequest request) {
-        if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "리프레시 토큰이 필요합니다."));
-        }
-
-        try {
-            var claims = jwtTokenProvider.parseClaims(request.getRefreshToken());
-            log.info("claims: {}", claims);
-            String userId = claims.getSubject();
-            User user = userService.getUserById(Long.parseLong(userId));
-
-            if (!userService.validateRefreshToken(user, request.getRefreshToken())) {
-                throw new RuntimeException("Invalid refresh token");
-            }
-
-            userService.logout(user);
-
-            log.info("User logged out successfully: userId={}", userId);
-            return ResponseEntity.ok(Map.of("message", "로그아웃되었습니다."));
-
-        } catch (Exception e) {
-            log.error("Logout failed: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
-        }
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+    public ResponseEntity<MessageResponse> logout(@RequestBody RefreshTokenRequest request) {
+        authService.logout(request.getRefreshToken());
+        return ResponseEntity.ok(new MessageResponse("로그아웃되었습니다."));
     }
 }
-
-
