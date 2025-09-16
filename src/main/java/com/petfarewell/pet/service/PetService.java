@@ -52,7 +52,6 @@ public class PetService {
         petRepository.save(pet);
     }
 
-    //
     public List<PetResponse> getUserPets(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -65,5 +64,23 @@ public class PetService {
                         .personality(pet.getPersonality())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deletePet(Long petId) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 반려동물을 찾을 수 없거나 삭제 권한이 없습니다."));
+
+        petRepository.delete(pet);
+    }
+
+    @Transactional
+    public Pet updatePet(Long petId, PetRequest request) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 반려동물을 찾을 수 없거나 수정 권한이 없습니다."));
+
+        pet.update(request.getName(), request.getBreed(), request.getPersonality());
+
+        return pet;
     }
 }
