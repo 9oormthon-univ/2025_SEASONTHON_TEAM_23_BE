@@ -7,9 +7,10 @@ import com.petfarewell.letter.entity.Letter;
 import com.petfarewell.letter.entity.Notification;
 import com.petfarewell.letter.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationService {
     private final UserRepository userRepository;
-    private final TributeService tributeService;
     private final NotificationRepository notificationRepository;
 
     @Transactional
@@ -42,7 +42,7 @@ public class NotificationService {
         return response;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Notification> findNotifications(User user) {
         return notificationRepository.findAllByUser(user);
     }

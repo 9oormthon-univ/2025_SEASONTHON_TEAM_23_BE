@@ -52,6 +52,7 @@ public class TributeService {
 
         return tribute;
     }
+
     @Transactional
     public Notification findOrCreateNotificationForLetter(Letter letter) {
         Optional<Notification> notificationOptional = tributeNotificationRepository.findByLetter(letter);
