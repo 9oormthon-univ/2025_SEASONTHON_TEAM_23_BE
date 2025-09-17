@@ -46,6 +46,7 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -57,6 +58,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public boolean validateRefreshToken(User user, String refreshToken) {
         return refreshToken.equals(user.getRefreshToken());
     }
