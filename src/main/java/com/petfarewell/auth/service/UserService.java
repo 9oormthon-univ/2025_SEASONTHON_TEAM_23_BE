@@ -1,19 +1,17 @@
 package com.petfarewell.auth.service;
 
-import java.util.Optional;
-
+import com.petfarewell.auth.dto.response.KakaoUserInfoResponse;
+import com.petfarewell.auth.entity.User;
+import com.petfarewell.auth.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.petfarewell.auth.dto.response.KakaoUserInfoResponse;
-import com.petfarewell.auth.entity.User;
-import com.petfarewell.auth.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +46,7 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -59,6 +58,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public boolean validateRefreshToken(User user, String refreshToken) {
         return refreshToken.equals(user.getRefreshToken());
     }

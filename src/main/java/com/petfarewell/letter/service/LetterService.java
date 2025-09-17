@@ -4,15 +4,13 @@ import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
 import com.petfarewell.letter.dto.request.LetterRequest;
 import com.petfarewell.letter.entity.Letter;
-import com.petfarewell.letter.entity.Notification;
 import com.petfarewell.letter.entity.upload.FileUploadService;
 import com.petfarewell.letter.repository.LetterRepository;
-import com.petfarewell.letter.repository.NotificationRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -25,7 +23,6 @@ public class LetterService {
     private final LetterRepository letterRepository;
     private final UserRepository userRepository;
     private final FileUploadService fileUploadService;
-    private final NotificationRepository notificationRepository;
 
     @Transactional
     public Letter saveLetter(Long userId, LetterRequest request, MultipartFile imageFile) {
@@ -48,19 +45,19 @@ public class LetterService {
         return letterRepository.save(newLetter);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Letter> findPublicLetters() {
         return letterRepository.findAllByIsPublicOrderByCreatedAtDesc(true);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Letter> findMyLetters(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
         return letterRepository.findAllByUserOrderByCreatedAtDesc(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new EntityNotFoundException("편지를 찾을 수 없습니다. ID: " + letterId));
