@@ -24,7 +24,8 @@
 </ol>
 
 <h2>Infra Structure</h2>
-<img width="1433" height="805" alt="image" src="https://github.com/user-attachments/assets/532ad004-bf07-41ae-8cca-4a9ef83d5d3e" />
+<img width="1435" height="806" alt="image" src="https://github.com/user-attachments/assets/bf9a48a9-3b53-4372-9c47-8acd18e84a2a" />
+
 
 
 <h2>Tech Stacks</h2>
