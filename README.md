@@ -89,17 +89,10 @@ src
 │         │    ├── dto
 │         │    └── service
 │         │
-│         ├── star
-│         │    ├── controller
-│         │    ├── dto
-│         │    └── service
-│         │
-│         ├
 │         └── PetfarewellApplication
 │
 └── resources
 ├── application.yml
-├── application-dev.yml
 └── application-prod.yml
  </pre>
 
