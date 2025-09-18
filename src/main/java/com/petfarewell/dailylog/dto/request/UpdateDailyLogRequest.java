@@ -1,4 +1,4 @@
-package com.petfarewell.dailylog.dto;
+package com.petfarewell.dailylog.dto.request;
 
 import lombok.Data;
 

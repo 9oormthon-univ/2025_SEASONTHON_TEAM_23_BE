@@ -1,4 +1,4 @@
-package com.petfarewell.dailylog.dto;
+package com.petfarewell.dailylog.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,11 +7,10 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class DailyLogDetailResponse {
+public class DailyLogSummaryResponse {
     private Long id;
     private LocalDate logDate;
     private String topic;
-    private String content;
+    private String preview;
     private Integer mood;
-    private String aiReflection;
 }

@@ -4,7 +4,9 @@ package com.petfarewell.dailylog.service;
 import com.petfarewell.auth.entity.User;
 import com.petfarewell.auth.repository.UserRepository;
 import com.petfarewell.dailylog.ai.OpenAiClientService;
-import com.petfarewell.dailylog.dto.*;
+import com.petfarewell.dailylog.dto.request.DailyLogRequest;
+import com.petfarewell.dailylog.dto.request.DailyLogUpdateRequest;
+import com.petfarewell.dailylog.dto.response.*;
 import com.petfarewell.dailylog.entity.DailyLog;
 import com.petfarewell.dailylog.entity.DailyTopic;
 import com.petfarewell.dailylog.repository.DailyLogRepository;
@@ -70,6 +72,7 @@ public class DailyLogService {
         });
     }
 
+    @Transactional(readOnly = true)
     public DailyTopicResponse getRandomTopic() {
         LocalDate today = LocalDate.now();
 
