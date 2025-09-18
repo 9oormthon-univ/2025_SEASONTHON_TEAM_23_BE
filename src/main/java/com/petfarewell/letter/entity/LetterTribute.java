@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "letter_tributes")
-@ToString(exclude = {"letter", "user", "message"})
+@ToString(exclude = {"letter", "user"})
 public class LetterTribute {
 
     @Id
