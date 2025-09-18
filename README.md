@@ -13,7 +13,8 @@
   펫어웰은 반려동물과의 이별을 겪은 사람들이 <strong>기록하고, 나누고, 회복</strong>할 수 있도록 돕는 서비스를 지향합니다.
 </p>
 
-<img width="1128" height="628" alt="image" src="https://github.com/user-attachments/assets/b8aebd8d-68d0-4173-a9b2-bde3cfba5c85" />
+<img width="1106" height="616" alt="image" src="https://github.com/user-attachments/assets/c088bfec-0de0-4f20-ad60-fe6343f226e4" />
+
 
 
 <p><strong>서비스 목표</strong></p>
