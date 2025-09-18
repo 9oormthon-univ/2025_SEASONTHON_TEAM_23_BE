@@ -1,7 +1,9 @@
 package com.petfarewell.dailylog.controller;
 
 import com.petfarewell.auth.security.CustomUserDetails;
-import com.petfarewell.dailylog.dto.*;
+import com.petfarewell.dailylog.dto.request.DailyLogRequest;
+import com.petfarewell.dailylog.dto.request.DailyLogUpdateRequest;
+import com.petfarewell.dailylog.dto.response.*;
 import com.petfarewell.dailylog.service.DailyLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,8 +38,8 @@ public class DailyLogController {
 
     @Operation(summary = "일기 전체 리스트 조회 API", description = "사용자가 작성한 일기를 전체 조회합니다.")
     @GetMapping("/list")
-    public List<DailyLogSummaryResponse> getAllLogs(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return service.getAllLogs(userDetails.getId());
+    public ResponseEntity<List<DailyLogSummaryResponse>> getAllLogs(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(service.getAllLogs(userDetails.getId()));
     }
 
     @Operation(summary = "일기 상세 조회 API", description = "해당 일기에 대한 정보를 상세 조회합니다.")
