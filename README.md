@@ -23,7 +23,12 @@
   <li><strong>필요하다면 전문가에게 상담을 받아</strong> 회복을 위한 적절한 도움을 연결합니다.</li>
 </ol>
 
-<h2>기술 스택</h2>
+<h2>Infra Structure</h2>
+<img width="1435" height="806" alt="image" src="https://github.com/user-attachments/assets/bf9a48a9-3b53-4372-9c47-8acd18e84a2a" />
+
+
+
+<h2>Tech Stacks</h2>
 
 |  카테고리  |              스택              |
 |:------:|:----------------------------:|
@@ -35,7 +40,7 @@
 | Deploy |  Docker, AWS(EC2, RDS, S3)   |
 | CI/CD  |        Github Actions        |
 
-<h2>프로젝트 구조</h2>
+<h2>Project Stucture</h2>
 <pre> 
 gradle
  └── wrapper
